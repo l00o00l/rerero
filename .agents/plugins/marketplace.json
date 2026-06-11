@@ -1,0 +1,20 @@
+{
+  "name": "rerero-local",
+  "interface": {
+    "displayName": "Rerero Local Plugins"
+  },
+  "plugins": [
+    {
+      "name": "rerero-git-workflows",
+      "source": {
+        "source": "local",
+        "path": "./plugins/rerero-git-workflows"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
