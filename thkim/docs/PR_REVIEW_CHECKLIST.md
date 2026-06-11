@@ -1,0 +1,97 @@
+# Pull Request Review Checklist
+
+Use this checklist for human review and Codex review. Findings should be
+ordered by severity and include file/line references when possible.
+
+## PR Summary Requirements
+
+Every PR should explain:
+
+- what changed
+- why it changed
+- how it was verified
+- screenshots or recordings for visible UI/gameplay changes
+- known risks or follow-up work
+
+## Required Local Checks
+
+At minimum, report:
+
+```powershell
+git status --short
+```
+
+Then include the relevant checks for the change:
+
+- C# tests or Unity test runner results
+- Unity batchmode import/build target check
+- Android APK/AAB build result
+- physical device smoke test
+- `adb logcat` notes for runtime issues
+
+## General Code Review
+
+- Does the change solve the stated problem without unrelated refactors?
+- Are edge cases and failure states handled?
+- Are public APIs, serialized fields, and asset references stable?
+- Is the code understandable without excessive comments?
+- Are tests added or consciously deferred with a reason?
+- Are errors logged with enough context but without leaking secrets?
+
+## Unity Review
+
+- Are `.meta` files present for every new/moved asset?
+- Are generated folders excluded from Git?
+- Did scenes, prefabs, or assets change unexpectedly?
+- Are scene/prefab changes small enough to review?
+- Are serialized references assigned and not relying on fragile lookups?
+- Are package changes pinned in `manifest.json` and `packages-lock.json`?
+- Are editor-only classes isolated under `Editor/` or editor assemblies?
+
+## Mobile Performance Review
+
+- Does gameplay code allocate in `Update`, physics callbacks, animation events,
+  UI refresh loops, or other hot paths?
+- Are repeated component lookups cached where appropriate?
+- Are LINQ, closures, boxing, reflection, and string formatting avoided in hot
+  paths?
+- Are textures, audio, shaders, particles, and post-processing appropriate for
+  target mobile devices?
+- Does the change affect startup time, memory footprint, battery, or thermals?
+- Is profiling needed before accepting the change?
+
+## Android Release Review
+
+- For release changes, is the output AAB rather than APK?
+- Are IL2CPP and ARM64 enabled for release?
+- Does the target API level meet current Google Play requirements?
+- Are development build and script debugging disabled for release?
+- Are signing secrets excluded from Git?
+- Are Android permissions justified?
+- Are third-party SDKs checked for manifest changes, native libraries, privacy,
+  and 16 KB page-size compatibility?
+
+## Git And Asset Review
+
+- Are large binary assets handled by Git LFS according to `.gitattributes`?
+- Are build outputs, logs, crash dumps, and memory captures ignored?
+- Are renames represented cleanly instead of delete/add churn?
+- Are Unity YAML conflicts resolved with UnityYAMLMerge and verified in Unity?
+
+## Security And Privacy Review
+
+- No credentials, tokens, private keys, keystores, or service account files.
+- No accidental collection of device identifiers, location, contacts, or other
+  sensitive data.
+- No new network endpoint without purpose and ownership.
+- No debug backdoor, test menu, or verbose logging in release builds.
+
+## Review Modes
+
+Use these modes when asking Codex or a human for focused review:
+
+- `general`: correctness, regressions, maintainability
+- `unity`: assets, scenes, prefabs, serialization, packages
+- `mobile-performance`: allocations, frame time, memory, battery
+- `android-release`: AAB, API level, IL2CPP, ARM64, signing, permissions
+- `security-privacy`: secrets, SDK behavior, permissions, data flow
