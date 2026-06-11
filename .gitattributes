@@ -1,0 +1,6 @@
+.gitattributes text eol=lf
+.agents/plugins/*.json text eol=lf
+plugins/rerero-git-workflows/**/*.json text eol=lf
+plugins/rerero-git-workflows/**/*.md text eol=lf
+plugins/rerero-git-workflows/**/*.py text eol=lf
+plugins/rerero-git-workflows/**/*.yaml text eol=lf

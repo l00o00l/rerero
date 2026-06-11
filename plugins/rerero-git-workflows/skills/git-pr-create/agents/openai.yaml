@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git PR Create"
+  short_description: "Draft and create GitHub pull requests from local changes."
+  default_prompt: "Use $git-pr-create to prepare a GitHub pull request for the current branch."

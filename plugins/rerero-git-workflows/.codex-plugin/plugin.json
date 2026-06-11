@@ -1,0 +1,18 @@
+{
+  "name": "rerero-git-workflows",
+  "version": "0.1.0",
+  "description": "Shared Codex workflows for GitHub PR creation, PR review, and post-merge sync in the Rerero repo.",
+  "author": {
+    "name": "Rerero contributors"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Rerero Git Workflows",
+    "shortDescription": "Create, review, and sync GitHub PRs safely.",
+    "longDescription": "Rerero Git Workflows bundles Codex skills for creating GitHub pull requests, reviewing PR-sized changes from multiple perspectives, and syncing a local checkout after a human has merged a PR.",
+    "developerName": "Rerero contributors",
+    "category": "Productivity",
+    "capabilities": ["Git", "GitHub", "Pull Requests"],
+    "defaultPrompt": "Help me use the Rerero Git workflow."
+  }
+}

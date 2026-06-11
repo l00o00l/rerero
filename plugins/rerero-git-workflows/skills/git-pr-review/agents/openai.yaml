@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git PR Review"
+  short_description: "Review pull requests across engineering risk areas."
+  default_prompt: "Use $git-pr-review to review the current GitHub pull request."

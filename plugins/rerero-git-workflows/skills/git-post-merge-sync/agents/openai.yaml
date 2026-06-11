@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Post-Merge Sync"
+  short_description: "Sync local branches after a PR is merged."
+  default_prompt: "Use $git-post-merge-sync to update my local checkout after a PR has been merged."
