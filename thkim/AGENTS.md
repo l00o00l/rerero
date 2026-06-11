@@ -15,6 +15,12 @@ Prefer local conventions in this file and `docs/` over generic Unity advice.
 ## Work Principles
 
 - Keep changes small and directly tied to the request.
+- Codex must never merge pull requests or push directly to protected branches.
+  PR work is limited to creating, updating, and reviewing PRs. A human must
+  perform any merge in GitHub after the required review gates pass.
+- Do not run `gh pr merge`, `git merge`, GitHub merge API calls, or direct
+  pushes to `main`/`master`. If asked to merge, refuse briefly and explain that
+  the repository is configured for human-only merges.
 - Do not commit generated Unity folders: `Library/`, `Temp/`, `Obj/`, `Logs/`,
   `UserSettings/`, build outputs, or local smoke-test logs.
 - Commit `.meta` files with their assets. A missing `.meta` file is a bug.
@@ -24,6 +30,22 @@ Prefer local conventions in this file and `docs/` over generic Unity advice.
   imports, builds, and asset generation.
 - Treat keystores, passwords, API keys, signing configs, and store credentials
   as secrets. Do not add them to the repository.
+
+## Deferred Work Tracking
+
+- Use `docs/TODO.md` for actionable work that is reasonable and valuable, but
+  intentionally deferred because of user choice, current scope, missing access,
+  or timing.
+- Add or update a TODO entry before finishing the task when such deferred work
+  is identified. Include the reason it matters, why it was deferred, and the
+  smallest useful next step.
+- Follow the entry format defined in `docs/TODO.md`.
+- Write TODO entries in Korean. Keep literal paths, commands, API names, and
+  code identifiers in their original form when that is clearer.
+- Do not add vague ideas, speculative wishlist items, or work that was rejected
+  as unnecessary. If an existing TODO becomes obsolete or completed, update its
+  status instead of leaving stale guidance.
+- Mention any TODO updates in the final response.
 
 ## Unity Conventions
 
@@ -53,6 +75,7 @@ For PR-facing work, include:
 - `git status --short`
 - commands/tests/builds run
 - known gaps or manual checks still needed
+- confirmation that no merge or protected-branch push was performed
 
 ## Review Posture
 

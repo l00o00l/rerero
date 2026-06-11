@@ -1,0 +1,112 @@
+# Block merge and protected-branch update commands from Codex.
+
+prefix_rule(
+    pattern = ["gh", "pr", "merge"],
+    decision = "forbidden",
+    justification = "Human-only merges are required. Codex may create or review PRs, but must not merge them.",
+    match = [
+        "gh pr merge 1 --squash",
+        "gh pr merge https://github.com/l00o00l/rerero/pull/1",
+    ],
+)
+
+prefix_rule(
+    pattern = ["gh", "api"],
+    decision = "forbidden",
+    justification = "GitHub API calls can bypass the normal PR UI. Use gh pr commands for read/create/review work and let a human merge.",
+    match = [
+        "gh api repos/l00o00l/rerero/pulls/1/merge --method PUT",
+        "gh api repos/l00o00l/rerero/rulesets --method POST",
+    ],
+)
+
+prefix_rule(
+    pattern = ["gh", "repo", "edit"],
+    decision = "forbidden",
+    justification = "Repository merge settings must be changed intentionally by a human owner/admin.",
+    match = [
+        "gh repo edit --enable-merge-commit=false",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "merge"],
+    decision = "forbidden",
+    justification = "Do not merge branches from Codex. Use PRs and human-owned GitHub merges.",
+    match = [
+        "git merge feature/example",
+        "git merge origin/main",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push", "origin", "main"],
+    decision = "forbidden",
+    justification = "Direct pushes to main are blocked. Push a feature branch and open a PR.",
+    match = [
+        "git push origin main",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push", "origin", "master"],
+    decision = "forbidden",
+    justification = "Direct pushes to master are blocked. Push a feature branch and open a PR.",
+    match = [
+        "git push origin master",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push", "origin", "HEAD:main"],
+    decision = "forbidden",
+    justification = "Direct pushes to main are blocked. Push a feature branch and open a PR.",
+    match = [
+        "git push origin HEAD:main",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push", "origin", "HEAD:refs/heads/main"],
+    decision = "forbidden",
+    justification = "Direct pushes to main are blocked. Push a feature branch and open a PR.",
+    match = [
+        "git push origin HEAD:refs/heads/main",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push", "origin", ":main"],
+    decision = "forbidden",
+    justification = "Deleting protected branches is blocked.",
+    match = [
+        "git push origin :main",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push", "origin", ":refs/heads/main"],
+    decision = "forbidden",
+    justification = "Deleting protected branches is blocked.",
+    match = [
+        "git push origin :refs/heads/main",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push", "--force"],
+    decision = "forbidden",
+    justification = "Force pushes are blocked for repository safety.",
+    match = [
+        "git push --force origin feature/example",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push", "-f"],
+    decision = "forbidden",
+    justification = "Force pushes are blocked for repository safety.",
+    match = [
+        "git push -f origin feature/example",
+    ],
+)

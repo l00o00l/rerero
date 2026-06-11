@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if git rev-parse -q --verify MERGE_HEAD >/dev/null 2>&1
+then
+    echo "Blocked commit while a merge is in progress." >&2
+    echo "Abort the merge and use a reviewed GitHub PR instead." >&2
+    exit 1
+fi
+
+exit 0
