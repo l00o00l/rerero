@@ -69,6 +69,25 @@
   파일과 충돌하지 않으며, 필요하면 CI 또는 PR 체크로 연결된다.
 - 관련: `.editorconfig`, `.gitattributes`, `docs/CONVENTIONS.md`.
 
+### 2026-06-12 - Unity 프로젝트 생성 후 CI 검증 도입 검토
+
+- 상태: 대기
+- 배경: PR 템플릿과 로컬 검증 규칙은 추가했지만, GitHub Actions 같은 서버 측
+  자동 검증은 아직 없다.
+- 중요한 이유: CI가 있으면 로컬에서 빠뜨린 포맷, 문서, Unity batchmode import,
+  Android build target 확인을 PR 단계에서 반복 가능하게 검증할 수 있다.
+- 보류한 이유: 아직 Unity 프로젝트가 없어 실제 프로젝트 경로, `Packages/`,
+  `ProjectSettings/`, batchmode 명령, 캐시 대상, 라이선스 처리 방식이 확정되지
+  않았다. 지금 workflow를 만들면 실행 불가능하거나 나중에 크게 고쳐야 할
+  가능성이 높다.
+- 다음 단계: Unity 프로젝트 생성 후 가장 작은 CI부터 추가한다. 우선 문서/라인
+  엔딩/기본 파일 검증을 넣고, 이후 Unity batchmode import와 Android target
+  검증을 분리해서 확장한다.
+- 완료 기준: PR에서 자동으로 실행되는 최소 CI가 있고, 실패 시 원인을 확인할 수
+  있으며, Unity 라이선스와 캐시 동작이 문서화된다.
+- 관련: `.github/pull_request_template.md`, `docs/PR_REVIEW_CHECKLIST.md`,
+  `docs/MOBILE_ANDROID.md`.
+
 ## 완료
 
 ## 폐기
