@@ -50,6 +50,25 @@
 - 관련: `docs/MERGE_GUARDRAILS.md`, `.codex/rules/no-merge.rules`,
   `.githooks/`.
 
+### 2026-06-12 - Unity 프로젝트 생성 후 자동 포맷과 정적 분석 도입 검토
+
+- 상태: 대기
+- 배경: `.editorconfig`와 문서 컨벤션은 이미 있지만, C# formatter와 Roslyn
+  analyzer를 자동으로 실행하거나 CI에서 강제하는 단계는 아직 없다.
+- 중요한 이유: 자동 포맷과 정적 분석은 코드 스타일 논쟁을 줄이고, Unity/C#
+  코드에서 실수, 불필요한 할당, 접근 제한 누락, 네이밍 불일치를 빨리 발견하게
+  해준다.
+- 보류한 이유: 아직 Unity 프로젝트가 생성되지 않아 실제 `.csproj`, `.sln`,
+  `Packages/manifest.json`, assembly definition 구조가 없다. 이 상태에서
+  `dotnet format`, analyzer 패키지, CI 검증을 정하면 실제 Unity 생성물과
+  맞지 않거나 검증할 수 없는 설정이 될 수 있다.
+- 다음 단계: Unity 프로젝트 생성 후 generated `.csproj`와 package 구조를
+  확인하고, `dotnet format` 적용 가능성, `.editorconfig` 반영 여부, 필요한
+  analyzer 수준을 작은 PR로 검증한다.
+- 완료 기준: 로컬에서 실행 가능한 포맷/분석 명령이 문서화되고, Unity 프로젝트
+  파일과 충돌하지 않으며, 필요하면 CI 또는 PR 체크로 연결된다.
+- 관련: `.editorconfig`, `.gitattributes`, `docs/CONVENTIONS.md`.
+
 ## 완료
 
 ## 폐기
