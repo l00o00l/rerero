@@ -1,0 +1,4 @@
+# Project-local Codex configuration layer.
+#
+# Keep this file present so trusted Codex sessions can load project rules from
+# .codex/rules/.

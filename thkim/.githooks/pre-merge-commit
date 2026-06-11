@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "Blocked merge commit." >&2
+echo "This repository uses human-only GitHub PR merges. Do not merge locally from Codex." >&2
+exit 1

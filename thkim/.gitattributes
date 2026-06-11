@@ -1,4 +1,5 @@
 * text=auto
+.gitattributes text eol=lf
 
 # Source and configuration
 *.cs text eol=lf
@@ -6,6 +7,8 @@
 *.hlsl text eol=lf
 *.cginc text eol=lf
 *.json text eol=lf
+*.toml text eol=lf
+*.rules text eol=lf
 *.asmdef text eol=lf
 *.asmref text eol=lf
 *.md text eol=lf
@@ -13,6 +16,7 @@
 *.xml text eol=lf
 *.uxml text eol=lf
 *.uss text eol=lf
+.githooks/* text eol=lf
 
 # Unity serialized YAML. Configure the unityyamlmerge driver locally before
 # relying on semantic merges for conflicts.
