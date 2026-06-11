@@ -50,6 +50,29 @@
 - 관련: `docs/MERGE_GUARDRAILS.md`, `.codex/rules/no-merge.rules`,
   `.githooks/`.
 
+### 2026-06-12 - 기본 브랜치 이름을 `main`에서 `master`로 변경
+
+- 상태: 차단
+- 배경: 현재 GitHub 저장소 기본 브랜치는 `main`이지만, 사용자는 기본 브랜치
+  이름을 `master`로 쓰고 싶다고 요청했다.
+- 중요한 이유: 기본 브랜치 이름은 PR base, 로컬 sync 명령, GitHub 보호 규칙,
+  문서 예시, 자동화 기본값에 영향을 준다. 원하는 이름으로 통일해두면 이후
+  워크플로우가 덜 헷갈린다.
+- 보류한 이유: 현재 인증된 GitHub 계정 권한은 `WRITE`이고, GitHub에서 기본
+  브랜치 rename/default branch 변경은 repository admin 권한이 필요한 설정이다.
+  또한 원격 기본 브랜치 변경 없이 로컬만 `master`로 바꾸면 추적 브랜치와 문서가
+  서로 어긋난다.
+- 다음 단계: repository owner/admin 권한으로 GitHub에서 `main` 브랜치를
+  `master`로 rename하고 default branch가 `master`인지 확인한다. 이후 로컬에서
+  `git branch -m main master`, `git fetch origin`,
+  `git branch -u origin/master master`, `git remote set-head origin -a` 순서로
+  추적 브랜치를 정리한다.
+- 완료 기준: GitHub default branch가 `master`이고, 로컬 `master`가
+  `origin/master`를 추적하며, 문서와 보호 규칙에서 기본 브랜치 표기가
+  `master` 기준으로 정리되어 있다.
+- 관련: `docs/MERGE_GUARDRAILS.md`, `.github/pull_request_template.md`,
+  `AGENTS.md`.
+
 ### 2026-06-12 - Unity 프로젝트 생성 후 자동 포맷과 정적 분석 도입 검토
 
 - 상태: 대기
