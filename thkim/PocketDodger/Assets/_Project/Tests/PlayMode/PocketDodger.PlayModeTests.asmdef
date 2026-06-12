@@ -3,6 +3,8 @@
   "rootNamespace": "Thkim.PocketDodger.Tests.PlayMode",
   "references": [
     "Thkim.PocketDodger",
+    "Unity.InputSystem",
+    "Unity.InputSystem.TestFramework",
     "UnityEngine.UI"
   ],
   "includePlatforms": [],

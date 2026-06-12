@@ -137,7 +137,7 @@ function Invoke-UnityTests {
     Write-Host "PocketDodger $TestPlatform tests passed. Total=$total Passed=$passed Failed=$failed Skipped=$skipped"
 }
 
-$platforms = if ($Mode -eq "All") {
+[string[]]$platforms = if ($Mode -eq "All") {
     @("EditMode", "PlayMode")
 } else {
     @($Mode)

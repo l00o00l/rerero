@@ -7,6 +7,22 @@ namespace Thkim.PocketDodger.Tests.EditMode
     public sealed class DifficultySettingsTests
     {
         [Test]
+        public void ObstacleSpawnPattern_ProducesReadableLaneSequence()
+        {
+            ObstacleSpawnPattern pattern = new ObstacleSpawnPattern();
+
+            Assert.AreEqual(LaneIndex.Left, pattern.NextLane());
+            Assert.AreEqual(LaneIndex.Center, pattern.NextLane());
+            Assert.AreEqual(LaneIndex.Right, pattern.NextLane());
+            Assert.AreEqual(LaneIndex.Center, pattern.NextLane());
+            Assert.AreEqual(LaneIndex.Right, pattern.NextLane());
+
+            pattern.Reset();
+
+            Assert.AreEqual(LaneIndex.Left, pattern.NextLane());
+        }
+
+        [Test]
         public void DifficultyValues_InterpolateAndClampByElapsedTime()
         {
             DifficultySettings settings = ScriptableObject.CreateInstance<DifficultySettings>();
