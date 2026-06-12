@@ -42,6 +42,9 @@ Rules:
 - Prefer feature folders inside `Scripts/` when systems grow:
   `Scripts/Gameplay`, `Scripts/UI`, `Scripts/Infrastructure`, etc.
 - Avoid dumping shared code into `Common` unless the responsibility is clear.
+- After creating a project from a Unity template, review and remove unused
+  sample scenes, template scene assets, empty `Resources/` folders, and direct
+  template packages before the project-shell PR is considered ready.
 
 ## Unity Version Control Settings
 
@@ -109,6 +112,9 @@ Formatting:
   paths without a clear platform reason.
 - Avoid per-frame allocations in hot paths. Be careful with LINQ, closures,
   boxing, string interpolation, and repeated component lookups.
+- Runtime UI text should update only when the displayed value changes. Avoid
+  formatting strings or assigning `Text.text`/TMP text every frame when the
+  value is unchanged.
 
 ## Assets
 
@@ -120,6 +126,8 @@ Formatting:
 - Generated artifacts and import caches belong outside Git.
 - Avoid `Resources/` for new content unless the loading behavior is intentional
   and documented in the PR.
+- Empty `Resources/` folders should be removed. Keeping one implies an
+  intentional loading strategy.
 - Prefer Addressables or explicit scene/prefab references for scalable content.
 
 ## Scenes And Prefabs
@@ -144,6 +152,12 @@ Formatting:
 
 - Put Edit Mode tests under `Assets/_Project/Tests/EditMode`.
 - Put Play Mode tests under `Assets/_Project/Tests/PlayMode`.
+- Every game with automated tests should provide a simple local wrapper such as
+  `<GameName>/test.cmd` plus `scripts/run-tests.ps1`.
+- Unity Test Runner scripts must fail when the result XML is missing or when
+  the XML result is not `Passed`.
+- Do not pass `-quit` with Unity `-runTests`; the Test Runner exits Unity after
+  writing results.
 - For gameplay logic, keep pure C# logic testable outside MonoBehaviours where
   practical.
 - Every bug fix should either add a focused test or explain why automated

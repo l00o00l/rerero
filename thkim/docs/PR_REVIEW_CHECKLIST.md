@@ -24,10 +24,15 @@ git status --short
 Then include the relevant checks for the change:
 
 - C# tests or Unity test runner results
+- game-local test wrapper, for example `.\<GameName>\test`
 - Unity batchmode import/build target check
 - Android APK/AAB build result
 - physical device smoke test
 - `adb logcat` notes for runtime issues
+
+For `git diff --check`, distinguish hand-authored files from Unity-generated
+YAML. Raw full-PR checks can report Unity serializer whitespace; do not present
+that as a clean full-PR check unless the command actually covered the full diff.
 
 ## General Code Review
 
@@ -47,6 +52,9 @@ Then include the relevant checks for the change:
 - Are serialized references assigned and not relying on fragile lookups?
 - Are package changes pinned in `manifest.json` and `packages-lock.json`?
 - Are editor-only classes isolated under `Editor/` or editor assemblies?
+- Were Unity template leftovers removed or justified: sample scenes, template
+  scene assets, empty `Resources/`, default input actions, and unused direct
+  packages?
 
 ## Mobile Performance Review
 
@@ -55,6 +63,7 @@ Then include the relevant checks for the change:
 - Are repeated component lookups cached where appropriate?
 - Are LINQ, closures, boxing, reflection, and string formatting avoided in hot
   paths?
+- Are UI labels/text refreshed only when values change instead of every frame?
 - Are textures, audio, shaders, particles, and post-processing appropriate for
   target mobile devices?
 - Does the change affect startup time, memory footprint, battery, or thermals?

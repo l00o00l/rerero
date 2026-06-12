@@ -1,0 +1,21 @@
+{
+  "name": "Thkim.PocketDodger.EditModeTests",
+  "rootNamespace": "Thkim.PocketDodger.Tests.EditMode",
+  "references": [
+    "Thkim.PocketDodger"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}
