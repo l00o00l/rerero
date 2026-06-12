@@ -11,6 +11,7 @@ namespace Thkim.PocketDodger.Gameplay
         private float _elapsedSeconds;
         private float _spawnTimer;
         private bool _isRunning;
+        private readonly ObstacleSpawnPattern _spawnPattern = new ObstacleSpawnPattern();
 
         public System.Action PlayerHit;
         public System.Action ObstacleDodged;
@@ -44,6 +45,7 @@ namespace Thkim.PocketDodger.Gameplay
             _elapsedSeconds = 0.0f;
             _spawnTimer = 0.0f;
             _isRunning = false;
+            _spawnPattern.Reset();
         }
 
         public void StartSpawning()
@@ -64,7 +66,7 @@ namespace Thkim.PocketDodger.Gameplay
                 return;
             }
 
-            LaneIndex lane = LaneIndexExtensions.Clamp(Random.Range(0, LaneIndexExtensions.LaneCount));
+            LaneIndex lane = _spawnPattern.NextLane();
             Obstacle obstacle = obstaclePool.Rent();
             obstacle.Despawned = HandleObstacleDespawned;
             obstacle.PlayerHit = HandlePlayerHit;

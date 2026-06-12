@@ -1,16 +1,17 @@
 using System.Collections;
-using System.Reflection;
 using NUnit.Framework;
 using Thkim.PocketDodger.Gameplay;
 using Thkim.PocketDodger.Infrastructure;
+using Thkim.PocketDodger.Input;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.TestTools;
 
 namespace Thkim.PocketDodger.Tests.PlayMode
 {
-    public sealed class GameFlowPlayModeTests
+    public sealed class GameFlowPlayModeTests : InputTestFixture
     {
         private const string HighScoreKey = "PocketDodger.HighScore";
 
@@ -67,8 +68,7 @@ namespace Thkim.PocketDodger.Tests.PlayMode
             yield return null;
             Assert.AreEqual(GameState.Playing, controller.State);
 
-            TriggerPlayerCollision(player, pool, spawner, laneLayout);
-            yield return null;
+            yield return TriggerPlayerCollisionThroughPhysics(player, pool, spawner, laneLayout);
 
             Assert.AreEqual(GameState.GameOver, controller.State);
             Assert.IsTrue(FindObject("GameOverPanel").activeSelf);
@@ -102,8 +102,7 @@ namespace Thkim.PocketDodger.Tests.PlayMode
             int finalScore = controller.CurrentScore;
             Assert.Greater(finalScore, 0);
 
-            TriggerPlayerCollision(player, pool, spawner, laneLayout);
-            yield return null;
+            yield return TriggerPlayerCollisionThroughPhysics(player, pool, spawner, laneLayout);
 
             Assert.AreEqual(GameState.GameOver, controller.State);
             Assert.AreEqual(finalScore, HighScoreStore.Load());
@@ -119,6 +118,31 @@ namespace Thkim.PocketDodger.Tests.PlayMode
             Assert.AreEqual($"Best {finalScore}", highScoreText.text);
         }
 
+        [UnityTest]
+        public IEnumerator KeyboardInput_MovesPlayerThroughInputRouter()
+        {
+            GameController controller = Object.FindAnyObjectByType<GameController>();
+            PlayerLaneMover player = Object.FindAnyObjectByType<PlayerLaneMover>();
+            PlayerInputRouter inputRouter = Object.FindAnyObjectByType<PlayerInputRouter>();
+            Assert.IsNotNull(controller);
+            Assert.IsNotNull(player);
+            Assert.IsNotNull(inputRouter);
+
+            ClickButton("StartButton");
+            yield return null;
+            Assert.AreEqual(GameState.Playing, controller.State);
+            Assert.AreEqual(LaneIndex.Center, player.CurrentLane);
+
+            Keyboard keyboard = InputSystem.AddDevice<Keyboard>();
+            Press(keyboard.rightArrowKey);
+            yield return null;
+
+            Assert.AreEqual(LaneIndex.Right, player.CurrentLane);
+
+            Release(keyboard.rightArrowKey);
+            yield return null;
+        }
+
         private static void ClickButton(string name)
         {
             Button button = FindObject(name).GetComponent<Button>();
@@ -126,7 +150,7 @@ namespace Thkim.PocketDodger.Tests.PlayMode
             button.onClick.Invoke();
         }
 
-        private static void TriggerPlayerCollision(
+        private static IEnumerator TriggerPlayerCollisionThroughPhysics(
             PlayerLaneMover player,
             ObstaclePool pool,
             ObstacleSpawner spawner,
@@ -140,7 +164,9 @@ namespace Thkim.PocketDodger.Tests.PlayMode
                 0.0f,
                 laneLayout.DespawnY);
 
-            InvokeTrigger(obstacle, player.GetComponent<Collider2D>());
+            Physics2D.SyncTransforms();
+            yield return new WaitForFixedUpdate();
+            yield return null;
         }
 
         private static GameObject FindObject(string name)
@@ -199,14 +225,5 @@ namespace Thkim.PocketDodger.Tests.PlayMode
             return targetScene.IsValid() && targetScene.isLoaded ? targetScene : SceneManager.GetActiveScene();
         }
 
-        private static void InvokeTrigger(Obstacle obstacle, Collider2D other)
-        {
-            MethodInfo method = typeof(Obstacle).GetMethod(
-                "OnTriggerEnter2D",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-
-            Assert.IsNotNull(method);
-            method.Invoke(obstacle, new object[] { other });
-        }
     }
 }

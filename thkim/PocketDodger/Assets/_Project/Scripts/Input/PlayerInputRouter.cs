@@ -21,6 +21,11 @@ namespace Thkim.PocketDodger.Input
 
         private void Update()
         {
+            ProcessInput();
+        }
+
+        public void ProcessInput()
+        {
             if (enableKeyboard && _keyboardInput.TryReadMove(out MoveCommand keyboardCommand))
             {
                 _moveRequested?.Invoke(keyboardCommand);
