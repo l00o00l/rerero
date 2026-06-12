@@ -1,6 +1,31 @@
 .gitattributes text eol=lf
+*.md text eol=lf
+*.json text eol=lf
 .agents/plugins/*.json text eol=lf
 plugins/rerero-git-workflows/**/*.json text eol=lf
 plugins/rerero-git-workflows/**/*.md text eol=lf
 plugins/rerero-git-workflows/**/*.py text eol=lf
 plugins/rerero-git-workflows/**/*.yaml text eol=lf
+shared-unity/**/*.json text eol=lf
+shared-unity/**/*.md text eol=lf
+shared-unity/**/*.txt text eol=lf
+shared-unity/**/*.asmdef text eol=lf
+shared-unity/**/*.meta text eol=lf
+shared-unity/**/*.unity text eol=lf
+shared-unity/**/*.prefab text eol=lf
+shared-unity/**/*.asset text eol=lf
+shared-unity/**/*.mat text eol=lf
+shared-unity/**/*.controller text eol=lf
+shared-unity/**/*.anim text eol=lf
+shared-unity/**/*.inputactions text eol=lf
+shared-unity/**/*.png filter=lfs diff=lfs merge=lfs -text
+shared-unity/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+shared-unity/**/*.jpeg filter=lfs diff=lfs merge=lfs -text
+shared-unity/**/*.psd filter=lfs diff=lfs merge=lfs -text
+shared-unity/**/*.psb filter=lfs diff=lfs merge=lfs -text
+shared-unity/**/*.fbx filter=lfs diff=lfs merge=lfs -text
+shared-unity/**/*.wav filter=lfs diff=lfs merge=lfs -text
+shared-unity/**/*.mp3 filter=lfs diff=lfs merge=lfs -text
+shared-unity/**/*.ogg filter=lfs diff=lfs merge=lfs -text
+shared-unity/**/*.ttf filter=lfs diff=lfs merge=lfs -text
+shared-unity/**/*.otf filter=lfs diff=lfs merge=lfs -text

@@ -28,17 +28,23 @@ Prefer local conventions in this file and `docs/` over generic Unity advice.
   reviewed carefully, and safer than using Unity APIs.
 - Prefer Unity Editor scripts or batchmode commands for project settings,
   imports, builds, and asset generation.
+- Every runnable game should keep its local run scripts inside that game's
+  directory. Prefer a simple `run.cmd` wrapper plus
+  `scripts/run-emulator.ps1` for Android emulator smoke runs.
 - Treat keystores, passwords, API keys, signing configs, and store credentials
   as secrets. Do not add them to the repository.
 
 ## Deferred Work Tracking
 
-- Use `docs/TODO.md` for actionable work that is reasonable and valuable, but
-  intentionally deferred because of user choice, current scope, missing access,
-  or timing.
+- Use `docs/TODO.md` for deferred work that affects the broader development
+  environment, shared workflow, repository policy, project infrastructure, or
+  future productivity across tasks.
 - Add or update a TODO entry before finishing the task when such deferred work
   is identified. Include the reason it matters, why it was deferred, and the
   smallest useful next step.
+- Do not use `docs/TODO.md` for ordinary feature backlog, missed steps from an
+  implementation plan, polish ideas for a single game feature, or task-local
+  cleanup. Keep those in the relevant plan document, PR notes, or issue tracker.
 - Follow the entry format defined in `docs/TODO.md`.
 - Write TODO entries in Korean. Keep literal paths, commands, API names, and
   code identifiers in their original form when that is clearer.
@@ -69,6 +75,9 @@ For Unity project changes, prefer batchmode checks and Android target import:
 $Unity = "C:\Program Files\Unity\Hub\Editor\6000.4.10f1\Editor\Unity.exe"
 & $Unity -batchmode -quit -projectPath <project-path> -buildTarget Android -logFile <log-path>
 ```
+
+For runnable Android games, keep the run script working and mention it in PR
+verification when it is relevant.
 
 For PR-facing work, include:
 

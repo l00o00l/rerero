@@ -1,0 +1,20 @@
+{
+  "name": "Thkim.PocketDodger.PlayModeTests",
+  "rootNamespace": "Thkim.PocketDodger.Tests.PlayMode",
+  "references": [
+    "Thkim.PocketDodger",
+    "UnityEngine.UI"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}
