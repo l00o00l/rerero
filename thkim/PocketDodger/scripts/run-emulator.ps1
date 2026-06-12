@@ -5,6 +5,8 @@ param(
     [string]$AvdName = "PocketDodger_API36",
     [string]$Gpu = "swiftshader_indirect",
     [string]$DeviceId = "",
+    [Alias("UnityPath")]
+    [string]$UnityEditorPath = "",
     [int]$BootTimeoutSeconds = 180,
     [int]$BuildTimeoutSeconds = 900
 )
@@ -13,10 +15,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $ProjectPath = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$RepoRoot = (Resolve-Path (Join-Path $ProjectPath "..")).Path
 $ApkPath = Join-Path $ProjectPath "Builds\Android\PocketDodger-debug.apk"
 $PackageName = "com.rerero.pocketdodger"
-$UnityPath = "C:\Program Files\Unity\Hub\Editor\6000.4.10f1\Editor\Unity.exe"
 
 function Resolve-FirstExistingPath {
     param(
@@ -56,6 +56,22 @@ function Get-AndroidSdkPath {
     }
 
     return Resolve-FirstExistingPath -CandidatePaths $candidates -Description "Android SDK"
+}
+
+function Get-UnityEditorPath {
+    $candidates = @()
+
+    if ($UnityEditorPath) {
+        $candidates += $UnityEditorPath
+    }
+
+    if ($env:UNITY_EDITOR_PATH) {
+        $candidates += $env:UNITY_EDITOR_PATH
+    }
+
+    $candidates += "C:\Program Files\Unity\Hub\Editor\6000.4.10f1\Editor\Unity.exe"
+
+    return Resolve-FirstExistingPath -CandidatePaths $candidates -Description "Unity Editor"
 }
 
 function Get-ConnectedDeviceIds {
@@ -152,22 +168,32 @@ function Wait-ForAndroidBoot {
 function Invoke-UnityAndroidBuild {
     param([int]$TimeoutSeconds)
 
-    if (-not (Test-Path $UnityPath)) {
-        throw "Unity Editor was not found at '$UnityPath'."
-    }
-
-    $logDir = Join-Path $RepoRoot ".unity-smoke-logs"
+    $logDir = Join-Path $ProjectPath "Logs"
     New-Item -ItemType Directory -Force -Path $logDir | Out-Null
 
     $logPath = Join-Path $logDir "pocketdodger-run-build.log"
     $startedAt = (Get-Date).ToUniversalTime().AddSeconds(-5)
+    $unityPath = Get-UnityEditorPath
+    $unityArguments = @(
+        "-batchmode",
+        "-quit",
+        "-projectPath", $ProjectPath,
+        "-buildTarget", "Android",
+        "-executeMethod", "Thkim.PocketDodger.Editor.BuildPipeline.BuildAndroidDebug.BuildApk",
+        "-logFile", $logPath
+    )
 
     Write-Host "Building PocketDodger debug APK..."
-    & $UnityPath -batchmode -quit -projectPath $ProjectPath -buildTarget Android -executeMethod Thkim.PocketDodger.Editor.BuildPipeline.BuildAndroidDebug.BuildApk -logFile $logPath
+    $process = Start-Process -FilePath $unityPath -ArgumentList $unityArguments -WindowStyle Hidden -PassThru
+    $completed = $process.WaitForExit($TimeoutSeconds * 1000)
 
-    $lastExitCodeVariable = Get-Variable -Name LASTEXITCODE -Scope Global -ErrorAction SilentlyContinue
-    if ($lastExitCodeVariable -and $null -ne $lastExitCodeVariable.Value -and $lastExitCodeVariable.Value -ne 0) {
-        throw "Unity build command failed with exit code $($lastExitCodeVariable.Value). See $logPath"
+    if (-not $completed) {
+        Stop-Process -Id $process.Id -Force
+        throw "Unity build command timed out after $TimeoutSeconds seconds. See $logPath"
+    }
+
+    if ($process.ExitCode -ne 0) {
+        throw "Unity build command failed with exit code $($process.ExitCode). See $logPath"
     }
 
     $deadline = (Get-Date).AddSeconds($TimeoutSeconds)

@@ -79,6 +79,8 @@ game's directory. For Android emulator smoke runs, use this naming pattern:
 The script should:
 
 - find the local Android SDK or fail with a clear message
+- find Unity from `-UnityEditorPath`, `UNITY_EDITOR_PATH`, or the documented
+  default path when rebuilding
 - start the expected AVD when no Android device is connected
 - use documented emulator options required by this machine
 - install the debug APK
