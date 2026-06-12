@@ -78,43 +78,59 @@ backlog로 쓰지 않는다. 각 항목에는 왜 중요한지, 왜 미뤘는지
 - 관련: `docs/MERGE_GUARDRAILS.md`, `.github/pull_request_template.md`,
   `AGENTS.md`.
 
-### 2026-06-12 - Unity 프로젝트 생성 후 자동 포맷과 정적 분석 도입 검토
+### 2026-06-12 - Unity 프로젝트 기반 자동 포맷과 정적 분석 도입 검토
 
-- 상태: 대기
+- 상태: 열림
 - 배경: `.editorconfig`와 문서 컨벤션은 이미 있지만, C# formatter와 Roslyn
   analyzer를 자동으로 실행하거나 CI에서 강제하는 단계는 아직 없다.
 - 중요한 이유: 자동 포맷과 정적 분석은 코드 스타일 논쟁을 줄이고, Unity/C#
   코드에서 실수, 불필요한 할당, 접근 제한 누락, 네이밍 불일치를 빨리 발견하게
   해준다.
-- 보류한 이유: 아직 Unity 프로젝트가 생성되지 않아 실제 `.csproj`, `.sln`,
-  `Packages/manifest.json`, assembly definition 구조가 없다. 이 상태에서
-  `dotnet format`, analyzer 패키지, CI 검증을 정하면 실제 Unity 생성물과
-  맞지 않거나 검증할 수 없는 설정이 될 수 있다.
-- 다음 단계: Unity 프로젝트 생성 후 generated `.csproj`와 package 구조를
-  확인하고, `dotnet format` 적용 가능성, `.editorconfig` 반영 여부, 필요한
+- 보류한 이유: `PocketDodger` Unity 프로젝트는 생성됐지만, 이번 작업의 범위는
+  게임 prototype과 로컬 실행/테스트 스크립트 안정화였다. formatter/analyzer는
+  generated `.csproj` 재생성, Unity analyzer 호환성, CI 연결 여부를 별도 PR에서
+  검증하는 편이 안전하다.
+- 다음 단계: `PocketDodger`의 generated `.csproj`와 assembly definition 구조를
+  기준으로 `dotnet format` 적용 가능성, `.editorconfig` 반영 여부, 필요한
   analyzer 수준을 작은 PR로 검증한다.
 - 완료 기준: 로컬에서 실행 가능한 포맷/분석 명령이 문서화되고, Unity 프로젝트
   파일과 충돌하지 않으며, 필요하면 CI 또는 PR 체크로 연결된다.
 - 관련: `.editorconfig`, `.gitattributes`, `docs/CONVENTIONS.md`.
 
-### 2026-06-12 - Unity 프로젝트 생성 후 CI 검증 도입 검토
+### 2026-06-12 - Unity 프로젝트 기반 CI 검증 도입 검토
 
-- 상태: 대기
+- 상태: 열림
 - 배경: PR 템플릿과 로컬 검증 규칙은 추가했지만, GitHub Actions 같은 서버 측
   자동 검증은 아직 없다.
 - 중요한 이유: CI가 있으면 로컬에서 빠뜨린 포맷, 문서, Unity batchmode import,
   Android build target 확인을 PR 단계에서 반복 가능하게 검증할 수 있다.
-- 보류한 이유: 아직 Unity 프로젝트가 없어 실제 프로젝트 경로, `Packages/`,
-  `ProjectSettings/`, batchmode 명령, 캐시 대상, 라이선스 처리 방식이 확정되지
-  않았다. 지금 workflow를 만들면 실행 불가능하거나 나중에 크게 고쳐야 할
-  가능성이 높다.
-- 다음 단계: Unity 프로젝트 생성 후 가장 작은 CI부터 추가한다. 우선 문서/라인
-  엔딩/기본 파일 검증을 넣고, 이후 Unity batchmode import와 Android target
-  검증을 분리해서 확장한다.
+- 보류한 이유: `PocketDodger` 프로젝트와 로컬 `run`/`test` 스크립트는 생겼지만,
+  GitHub Actions에서 Unity 라이선스, Android 모듈, 캐시, 실행 시간 비용을
+  어떻게 다룰지 아직 검증하지 않았다.
+- 다음 단계: 가장 작은 CI부터 추가한다. 우선 문서/라인 엔딩/금지 파일 검증을
+  넣고, 이후 `PocketDodger/test`, Unity baseline verify, Android target 검증을
+  분리해서 확장한다.
 - 완료 기준: PR에서 자동으로 실행되는 최소 CI가 있고, 실패 시 원인을 확인할 수
   있으며, Unity 라이선스와 캐시 동작이 문서화된다.
 - 관련: `.github/pull_request_template.md`, `docs/PR_REVIEW_CHECKLIST.md`,
   `docs/MOBILE_ANDROID.md`.
+
+### 2026-06-12 - Unity YAML diff 검증 스크립트 도입
+
+- 상태: 열림
+- 배경: `git diff --check origin/main...HEAD`는 Unity가 생성한 `.meta`,
+  `.asset`, `ProjectSettings` YAML의 trailing whitespace를 대량으로 보고한다.
+- 중요한 이유: raw `git diff --check` 결과를 그대로 PR 게이트로 쓰면 실제
+  hand-authored 오류와 Unity serializer 노이즈가 섞여 리뷰 신뢰도가 떨어진다.
+- 보류한 이유: 이번 작업에서는 컨벤션과 PR 체크리스트에 기준을 명시했지만,
+  hand-authored 파일만 검사하거나 Unity YAML 결과를 별도 분류하는 자동 스크립트는
+  아직 만들지 않았다.
+- 다음 단계: `scripts/check-pr.ps1` 같은 로컬 검증 스크립트를 만들고, Markdown,
+  JSON, C#, PowerShell 등 hand-authored 파일에는 `diff --check`를 강제하되 Unity
+  YAML trailing whitespace는 별도 요약으로 분류한다.
+- 완료 기준: 로컬에서 한 명령으로 PR 검증을 실행할 수 있고, Unity YAML 노이즈와
+  실제 텍스트 오류가 분리되어 보고된다.
+- 관련: `docs/PR_REVIEW_CHECKLIST.md`, `.gitattributes`, Unity serialized YAML.
 
 ## 완료
 

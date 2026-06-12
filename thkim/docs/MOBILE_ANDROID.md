@@ -98,6 +98,37 @@ On this machine, PocketDodger uses `-gpu swiftshader_indirect` for emulator
 smoke tests because the default emulator GPU path rendered a black screen during
 local verification.
 
+## Local Test Scripts
+
+Every tested game should provide a one-command local test script inside that
+game's directory:
+
+```text
+<GameName>/test.cmd
+<GameName>/scripts/run-tests.ps1
+```
+
+The script should:
+
+- find Unity from `-UnityEditorPath`, `UNITY_EDITOR_PATH`, or the documented
+  default path
+- run Edit Mode and Play Mode tests by default
+- write logs and XML results under the ignored game `Logs/` directory
+- fail if Unity exits nonzero
+- fail if the expected XML result is missing
+- fail if the XML result is not `Passed`
+
+When using Unity Test Runner from CLI, do not pass `-quit` with `-runTests`.
+The Test Runner exits Unity after writing results.
+
+PocketDodger example:
+
+```powershell
+.\PocketDodger\test
+.\PocketDodger\test -Mode EditMode
+.\PocketDodger\test -Mode PlayMode
+```
+
 ## Shared Assets
 
 Reusable assets that should be shared across games belong in the workspace-level

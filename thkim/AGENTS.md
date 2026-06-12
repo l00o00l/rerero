@@ -31,6 +31,9 @@ Prefer local conventions in this file and `docs/` over generic Unity advice.
 - Every runnable game should keep its local run scripts inside that game's
   directory. Prefer a simple `run.cmd` wrapper plus
   `scripts/run-emulator.ps1` for Android emulator smoke runs.
+- Every tested game should keep its local test scripts inside that game's
+  directory. Prefer a simple `test.cmd` wrapper plus `scripts/run-tests.ps1`
+  that fails when Unity Test Runner XML is missing or failed.
 - Treat keystores, passwords, API keys, signing configs, and store credentials
   as secrets. Do not add them to the repository.
 
@@ -78,6 +81,9 @@ $Unity = "C:\Program Files\Unity\Hub\Editor\6000.4.10f1\Editor\Unity.exe"
 
 For runnable Android games, keep the run script working and mention it in PR
 verification when it is relevant.
+
+For Unity Test Runner checks, prefer the game-local `test.cmd` wrapper when it
+exists. Do not use `-quit` together with `-runTests`.
 
 For PR-facing work, include:
 

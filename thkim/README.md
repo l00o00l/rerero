@@ -12,3 +12,4 @@ Unity mobile game workspace.
 ## Games
 
 - PocketDodger: `.\PocketDodger\run`
+- PocketDodger tests: `.\PocketDodger\test`
