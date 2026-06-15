@@ -26,8 +26,8 @@ Then include the relevant checks for the change:
 - C# tests or Unity test runner results
 - game-local test wrapper, for example `.\<GameName>\test`
 - Unity batchmode import/build target check
-- Android APK/AAB build result
-- physical device smoke test
+- target-platform build result, such as Android APK/AAB or Windows player
+- target-platform smoke test, such as emulator, physical device, or desktop run
 - `adb logcat` notes for runtime issues
 
 For `git diff --check`, distinguish hand-authored files from Unity-generated
@@ -55,6 +55,15 @@ that as a clean full-PR check unless the command actually covered the full diff.
 - Were Unity template leftovers removed or justified: sample scenes, template
   scene assets, empty `Resources/`, default input actions, and unused direct
   packages?
+- Does the folder/script layout follow `docs/UNITY_PROJECT_STRUCTURE.md`?
+- Are platform-specific folders used only for real platform-specific behavior?
+
+## Platform Review
+
+- Is the PR's primary target platform explicit?
+- Are input, screen/orientation, build target, run script, and smoke path clear?
+- Is platform-neutral gameplay code kept out of platform-specific folders?
+- Could project-wide platform settings break another target?
 
 ## Mobile Performance Review
 
@@ -101,6 +110,7 @@ Use these modes when asking Codex or a human for focused review:
 
 - `general`: correctness, regressions, maintainability
 - `unity`: assets, scenes, prefabs, serialization, packages
+- `platform`: target platform assumptions, build/run scripts, folder placement
 - `mobile-performance`: allocations, frame time, memory, battery
 - `android-release`: AAB, API level, IL2CPP, ARM64, signing, permissions
 - `security-privacy`: secrets, SDK behavior, permissions, data flow

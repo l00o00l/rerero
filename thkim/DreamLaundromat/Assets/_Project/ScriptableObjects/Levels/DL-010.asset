@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16394bed0d3bc748ac9891b3671f55f, type: 3}
+  m_Name: DL-010
+  m_EditorClassIdentifier: Thkim.DreamLaundromat::Thkim.DreamLaundromat.Levels.LevelDefinition
+  _levelId: DL-010
+  _moveLimit: 14
+  _dreams:
+  - Id: dream-a
+    DisplayName: Nightmare A
+    InitialAttributes:
+      Stain: 1
+      Moisture: 0
+    CapacityCost: 1
+    InitialBasketId: 
+  - Id: dream-b
+    DisplayName: Nightmare B
+    InitialAttributes:
+      Stain: 1
+      Moisture: 0
+    CapacityCost: 1
+    InitialBasketId: 
+  - Id: dream-c
+    DisplayName: Wet C
+    InitialAttributes:
+      Stain: 0
+      Moisture: 1
+    CapacityCost: 1
+    InitialBasketId: 
+  - Id: dream-d
+    DisplayName: Clean D
+    InitialAttributes:
+      Stain: 0
+      Moisture: 0
+    CapacityCost: 1
+    InitialBasketId: 
+  _machines:
+  - Id: washer
+    DisplayName: Washer
+    Type: 0
+    Capacity: 1
+  - Id: dryer
+    DisplayName: Dryer
+    Type: 1
+    Capacity: 1
+  _baskets:
+  - Id: basket-a
+    DisplayName: Basket A
+    Capacity: 1
+  - Id: basket-b
+    DisplayName: Basket B
+    Capacity: 2
+  _orders:
+  - Id: order-a
+    DisplayName: Dry Clean 1
+    Requirements:
+    - RequiresStain: 1
+      Stain: 0
+      RequiresMoisture: 1
+      Moisture: 0
+      Count: 1
+  - Id: order-b
+    DisplayName: Dry Clean 2
+    Requirements:
+    - RequiresStain: 1
+      Stain: 0
+      RequiresMoisture: 1
+      Moisture: 0
+      Count: 1
+  - Id: order-c
+    DisplayName: Wet Clean
+    Requirements:
+    - RequiresStain: 1
+      Stain: 0
+      RequiresMoisture: 1
+      Moisture: 1
+      Count: 1
+  _tutorialHint: "\uBAA8\uB4E0 \uAE30\uBCF8 \uADDC\uCE59\uACFC \uACF5\uAC04 \uC555\uBC15\uC744
+    \uD568\uAED8 \uAC80\uC99D\uD55C\uB2E4."

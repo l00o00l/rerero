@@ -1,4 +1,4 @@
-# Unity Mobile Game Conventions
+# Unity Game Conventions
 
 These conventions are intentionally small. Add rules only after repeated need
 or a real production risk.
@@ -14,6 +14,8 @@ or a real production risk.
 ## Project Layout
 
 Owned project content should live under `Assets/_Project/`.
+For full game-local and platform-specific layout rules, see
+`docs/UNITY_PROJECT_STRUCTURE.md`.
 
 ```text
 Assets/
@@ -39,6 +41,9 @@ Rules:
 - Keep `Assets/_Project/` free of vendor package internals.
 - Put editor-only scripts under an `Editor/` folder.
 - Keep runtime assemblies independent from editor-only code.
+- Keep gameplay, rules, data, and shared UI platform-neutral by default.
+- Add platform-specific folders only for platform behavior, build settings,
+  input integration, packaging, or smoke testing.
 - Prefer feature folders inside `Scripts/` when systems grow:
   `Scripts/Gameplay`, `Scripts/UI`, `Scripts/Infrastructure`, etc.
 - Avoid dumping shared code into `Common` unless the responsibility is clear.

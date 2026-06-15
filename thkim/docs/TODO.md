@@ -36,6 +36,28 @@ backlog로 쓰지 않는다. 각 항목에는 왜 중요한지, 왜 미뤘는지
 
 ## 열림
 
+### 2026-06-15 - Android 실행 스크립트 공통 템플릿 정리
+
+- 상태: 열림
+- 배경: `DreamLaundromat/run.cmd` 검증 중 `ANDROID_HOME`/`ANDROID_SDK_ROOT`가
+  Unity 내장 SDK를 가리키면 Android Studio AVD의 `emulator.exe`가 system image를
+  찾지 못하고 종료되는 문제가 확인되었다. DreamLaundromat 스크립트는 이번 작업에서
+  Android Studio SDK 우선 탐색과 에뮬레이터 프로세스 환경 보정으로 수정했다.
+- 중요한 이유: 앞으로 게임마다 `run.cmd`와 `scripts/run-emulator.ps1`를 유지하면
+  SDK 탐색, AVD 부팅 대기, APK 설치/실행 검증 로직이 반복되고 서로 달라질 수 있다.
+  공통 템플릿이 있으면 새 Unity 모바일 프로젝트를 만들 때 실행 스크립트 품질을
+  일정하게 유지할 수 있다.
+- 보류한 이유: 이번 PR의 주 목적은 DreamLaundromat 프로토타입 구현과 검증이다.
+  기존 게임 스크립트 전수 수정이나 템플릿 추출은 범위가 커져 별도 PR에서 다루는
+  편이 안전하다.
+- 다음 단계: `DreamLaundromat/scripts/run-emulator.ps1`의 SDK 탐색, boot wait,
+  `-BuildOnly` 흐름을 기준 템플릿으로 정리하고, 기존 게임 스크립트에도 같은 동작을
+  적용할지 검토한다.
+- 완료 기준: 새 게임을 만들 때 재사용할 수 있는 Android 실행 스크립트 템플릿이
+  문서화되어 있고, 기존 게임 스크립트가 같은 SDK 탐색/에뮬레이터 부팅 규칙을 따른다.
+- 관련: `DreamLaundromat/run.cmd`, `DreamLaundromat/scripts/run-emulator.ps1`,
+  `PocketDodger/scripts/run-emulator.ps1`, `docs/IMPLEMENTATION_PLANNING.md`.
+
 ### 2026-06-12 - GitHub 서버 측 merge 보호 설정 활성화
 
 - 상태: 차단

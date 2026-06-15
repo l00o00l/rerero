@@ -1,0 +1,20 @@
+{
+  "name": "Thkim.DreamLaundromat.PlayModeTests",
+  "rootNamespace": "Thkim.DreamLaundromat.Tests.PlayMode",
+  "references": [
+    "Thkim.DreamLaundromat",
+    "UnityEngine.UI"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}

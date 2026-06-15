@@ -1,7 +1,7 @@
 # Android Mobile Development Guide
 
-This project targets Android first. iOS builds require macOS and Xcode and are
-not covered by the Windows local toolchain.
+This guide applies to Android-targeted Unity games in this workspace. iOS builds
+require macOS and Xcode and are not covered by the Windows local toolchain.
 
 ## Baseline Sources
 
