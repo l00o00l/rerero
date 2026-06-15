@@ -2,19 +2,25 @@
 
 ## Scope
 
-These instructions apply to the Unity mobile game project under this directory.
+These instructions apply to Unity game projects under this directory.
 Prefer local conventions in this file and `docs/` over generic Unity advice.
+The current primary target is mobile Android unless a game-local plan says
+otherwise.
 
 ## Environment
 
 - Primary shell: PowerShell on Windows.
 - Unity Editor: `C:\Program Files\Unity\Hub\Editor\6000.4.10f1\Editor\Unity.exe`.
-- Android toolchain: Unity-installed Android SDK, NDK, and OpenJDK.
+- Android toolchain for Android targets: Unity-installed Android SDK, NDK, and
+  OpenJDK.
 - GitHub workflow: use `gh` when interacting with pull requests.
 
 ## Work Principles
 
 - Keep changes small and directly tied to the request.
+- When implementing code, leave appropriate comments for non-obvious intent,
+  constraints, invariants, workarounds, or risky control flow. Do not add
+  comments that merely restate obvious syntax or names.
 - Codex must never merge pull requests or push directly to protected branches.
   PR work is limited to creating, updating, and reviewing PRs. A human must
   perform any merge in GitHub after the required review gates pass.
@@ -29,13 +35,41 @@ Prefer local conventions in this file and `docs/` over generic Unity advice.
 - Prefer Unity Editor scripts or batchmode commands for project settings,
   imports, builds, and asset generation.
 - Every runnable game should keep its local run scripts inside that game's
-  directory. Prefer a simple `run.cmd` wrapper plus
-  `scripts/run-emulator.ps1` for Android emulator smoke runs.
+  directory. Prefer a simple `run.cmd` wrapper that delegates to
+  platform-specific scripts under `scripts/`.
+- For Android games, prefer `scripts/run-emulator.ps1` for emulator smoke runs.
+  For non-Android games, use an explicit platform script such as
+  `scripts/run-windows.ps1` instead of overloading Android scripts.
 - Every tested game should keep its local test scripts inside that game's
   directory. Prefer a simple `test.cmd` wrapper plus `scripts/run-tests.ps1`
   that fails when Unity Test Runner XML is missing or failed.
 - Treat keystores, passwords, API keys, signing configs, and store credentials
   as secrets. Do not add them to the repository.
+
+## Documentation Language
+
+- Write the body text of newly created or substantially edited planning and
+  project documents in Korean by default.
+- Keep titles, section headings, table headers, working game names, proper
+  nouns, product names, technical terms, code identifiers, file paths,
+  commands, and API names in English when English is clearer or more natural.
+- Keep official names, license names, external document titles, and direct
+  source references in their original language when needed.
+- Prefer readability, precision, and team usage over literal translation.
+
+## Implementation Planning
+
+- Before starting a new game prototype or a major gameplay feature, create or
+  update a game-local implementation plan, preferably
+  `<GameName>/docs/PLAN.md`.
+- Follow `docs/IMPLEMENTATION_PLANNING.md` for the required structure, task
+  breakdown style, PR split, and verification expectations.
+- Every implementation plan must include a concrete verification and test plan.
+  Cover automated tests, Unity batchmode checks, Android/build checks when
+  relevant, smoke tests, and manual checks that cannot be done from CLI.
+- After drafting an implementation plan, self-review it against that guide,
+  revise any issues found, and surface unresolved user decisions before moving
+  into implementation.
 
 ## Deferred Work Tracking
 
@@ -59,6 +93,8 @@ Prefer local conventions in this file and `docs/` over generic Unity advice.
 ## Unity Conventions
 
 - Project code and owned assets belong under `Assets/_Project/`.
+- Follow `docs/UNITY_PROJECT_STRUCTURE.md` for game-local folder layout,
+  platform-specific build/run scripts, and when to add platform folders.
 - Third-party packages and imported vendor assets belong under `Assets/ThirdParty/`
   or `Packages/`, depending on how they are distributed.
 - Use one `MonoBehaviour` per file, with file name matching class name.
@@ -72,7 +108,8 @@ Prefer local conventions in this file and `docs/` over generic Unity advice.
 ## Verification
 
 For code-only changes, run the fastest relevant verification available.
-For Unity project changes, prefer batchmode checks and Android target import:
+For Unity project changes, prefer batchmode checks for the target platform.
+For Android-targeted changes, use Android target import/build checks:
 
 ```powershell
 $Unity = "C:\Program Files\Unity\Hub\Editor\6000.4.10f1\Editor\Unity.exe"
@@ -81,6 +118,9 @@ $Unity = "C:\Program Files\Unity\Hub\Editor\6000.4.10f1\Editor\Unity.exe"
 
 For runnable Android games, keep the run script working and mention it in PR
 verification when it is relevant.
+
+For non-Android games, keep the equivalent platform run/build script working and
+mention the target platform in PR verification.
 
 For Unity Test Runner checks, prefer the game-local `test.cmd` wrapper when it
 exists. Do not use `-quit` together with `-runTests`.

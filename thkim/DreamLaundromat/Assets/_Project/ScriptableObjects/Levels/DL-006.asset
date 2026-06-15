@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e16394bed0d3bc748ac9891b3671f55f, type: 3}
+  m_Name: DL-006
+  m_EditorClassIdentifier: Thkim.DreamLaundromat::Thkim.DreamLaundromat.Levels.LevelDefinition
+  _levelId: DL-006
+  _moveLimit: 5
+  _dreams:
+  - Id: dream-a
+    DisplayName: Wet A
+    InitialAttributes:
+      Stain: 0
+      Moisture: 1
+    CapacityCost: 1
+    InitialBasketId: 
+  _machines:
+  - Id: dryer
+    DisplayName: Dryer
+    Type: 1
+    Capacity: 1
+  _baskets:
+  - Id: basket-a
+    DisplayName: Basket A
+    Capacity: 2
+  - Id: basket-b
+    DisplayName: Basket B
+    Capacity: 2
+  _orders:
+  - Id: order-a
+    DisplayName: Dry Dream
+    Requirements:
+    - RequiresStain: 1
+      Stain: 0
+      RequiresMoisture: 1
+      Moisture: 0
+      Count: 1
+  _tutorialHint: "\uC816\uC740 \uAFC8\uC740 \uAC74\uC870\uD574\uC57C \uC81C\uCD9C\uD560
+    \uC218 \uC788\uB2E4."
