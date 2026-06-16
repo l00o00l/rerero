@@ -1,5 +1,6 @@
 using System.Collections;
 using NUnit.Framework;
+using Thkim.DreamLaundromat.DynamicLab;
 using Thkim.DreamLaundromat.Rules;
 using Thkim.DreamLaundromat.UI;
 using UnityEngine;
@@ -110,6 +111,42 @@ namespace Thkim.DreamLaundromat.Tests.PlayMode
             Assert.That(safeArea.anchorMax.y, Is.EqualTo(expectedMax.y).Within(0.001f));
         }
 
+        [UnityTest]
+        public IEnumerator DynamicLabDebugGame_ReplaysSolverSolution()
+        {
+            var host = new GameObject("DynamicLabDebugGameHost", typeof(DynamicLabDebugGame));
+            DynamicLabDebugGame game = host.GetComponent<DynamicLabDebugGame>();
+            DynamicRoundDefinition round = CreateDynamicLabReplayRound();
+            game.LoadRoundForTest(round);
+
+            DynamicSolveResult solve = DynamicRoundSolver.Solve(round);
+            Assert.That(solve.Solvable, Is.True);
+
+            for (int i = 0; i < solve.FirstSolutionActions.Count; i++)
+            {
+                Assert.That(game.TryApplyForTest(solve.FirstSolutionActions[i]), Is.True);
+                yield return null;
+            }
+
+            Assert.That(game.CurrentStatus, Is.EqualTo(DynamicRoundStatus.Cleared));
+            Assert.That(game.CompletedOrders, Is.EqualTo(1));
+            Object.Destroy(host);
+        }
+
+        [UnityTest]
+        public IEnumerator DynamicLabDebugGame_AppliesPreviewSwapItemAction()
+        {
+            var host = new GameObject("DynamicLabDebugGameModifierHost", typeof(DynamicLabDebugGame));
+            DynamicLabDebugGame game = host.GetComponent<DynamicLabDebugGame>();
+            game.LoadRoundForTest(DynamicSampleRounds.CreatePreviewSwapRequiredRound());
+
+            Assert.That(game.TryApplyForTest(DynamicPlayerAction.UseItem(DynamicBuiltInModifiers.PreviewSwapId)), Is.True);
+            yield return null;
+
+            Assert.That(game.CurrentStatus, Is.EqualTo(DynamicRoundStatus.Playing));
+            Object.Destroy(host);
+        }
+
         private static void AssertTextExists(Text[] labels, string expectedText)
         {
             for (int i = 0; i < labels.Length; i++)
@@ -148,6 +185,53 @@ namespace Thkim.DreamLaundromat.Tests.PlayMode
             }
 
             return null;
+        }
+
+        private static DynamicRoundDefinition CreateDynamicLabReplayRound()
+        {
+            return new DynamicRoundDefinition
+            {
+                RoundId = "playmode-dynamic-lab-replay",
+                Seed = 731,
+                MoveLimit = 4,
+                TargetCompletedOrders = 1,
+                DreamBag = new[]
+                {
+                    new DynamicDreamBagEntry(
+                        new DynamicDreamAttributes(
+                            DreamTaint.Clean,
+                            DreamMood.Calm,
+                            DreamClarity.Blurry,
+                            DreamStability.Unsettled),
+                        1)
+                },
+                OrderDeck = new[]
+                {
+                    new DynamicOrderDeckEntry(
+                        DynamicOrderRequirement.Stable(
+                            1,
+                            false,
+                            DreamTaint.Clean,
+                            true,
+                            DreamMood.Calm,
+                            false,
+                            DreamClarity.Blurry),
+                        1)
+                },
+                StreamConfig = new DynamicStreamConfig
+                {
+                    ActiveDreamSlots = 1,
+                    ActiveOrderSlots = 1,
+                    DreamPreviewCount = 0,
+                    OrderPreviewCount = 0,
+                    MaxDreamDraws = 1,
+                    MaxOrderDraws = 1
+                },
+                StorageConfig = new DynamicStorageConfig
+                {
+                    StorageSlotCount = 0
+                }
+            };
         }
     }
 }
