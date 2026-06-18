@@ -28,6 +28,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
         private Transform storageRoot;
         private Transform modifierRoot;
         private Transform actionRoot;
+        private RectTransform gameplayHeader;
         private Text homeProgressText;
         private Text continueButtonText;
         private Text levelSelectProgressText;
@@ -455,38 +456,37 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
 
         private void BuildGameplayScreen(RectTransform root)
         {
-            RectTransform header = CreatePanel(root, "Header", ReleaseVisualStyle.Panel);
-            ApplyPanelSprite(header, artCatalog?.TitleBackground, new Color(1f, 1f, 1f, 0.42f));
-            SetPreferredHeight(header.gameObject, 142f);
-            AddVerticalLayout(header, new RectOffset(18, 18, 14, 14), 6f);
-            headerText = CreateText(header, "HeaderText", "Dream Laundromat", 34, TextAnchor.MiddleLeft);
-            guidanceText = CreateText(header, "GuidanceText", string.Empty, 21, TextAnchor.MiddleLeft);
+            gameplayHeader = CreatePanel(root, "Header", ReleaseVisualStyle.Panel);
+            ApplyPanelSprite(gameplayHeader, artCatalog?.TitleBackground, new Color(1f, 1f, 1f, 0.42f));
+            SetPreferredHeight(gameplayHeader.gameObject, 106f);
+            AddVerticalLayout(gameplayHeader, new RectOffset(18, 18, 10, 10), 4f);
+
+            headerText = CreateText(gameplayHeader, "HeaderText", "Dream Laundromat", 30, TextAnchor.MiddleLeft);
+            restartButton = CreateHeaderActionButton(gameplayHeader, "Restart", "Restart", OnRestart, new Color(0.25f, 0.25f, 0.31f, 1f), 168f, 78f);
+            CreateHeaderActionButton(gameplayHeader, "Levels", "Levels", ShowLevelSelectScreen, ReleaseVisualStyle.Action, 92f, 70f);
+            CreateHeaderActionButton(gameplayHeader, "Pause", "Pause", ShowPauseScreen, ReleaseVisualStyle.Settings, 18f, 68f);
+            nextButton = CreateHeaderActionButton(gameplayHeader, "Next", "Next", OnNext, new Color(0.18f, 0.34f, 0.27f, 1f), 18f, 58f);
+            nextButton.gameObject.SetActive(false);
+
+            guidanceText = CreateText(gameplayHeader, "GuidanceText", string.Empty, 18, TextAnchor.MiddleLeft);
+            messageText = CreateText(gameplayHeader, "MessageText", string.Empty, 18, TextAnchor.MiddleLeft);
+            messageText.gameObject.SetActive(false);
+            feedbackPresenter = GetOrAddComponent<ReleaseFeedbackPresenter>(gameObject);
+            feedbackPresenter.Configure(messageText);
 
             RectTransform content = CreatePanel(root, "Content", ReleaseVisualStyle.Content);
             SetFlexibleHeight(content.gameObject, 1f);
-            AddVerticalLayout(content, new RectOffset(12, 12, 12, 12), 8f);
+            AddVerticalLayout(content, new RectOffset(12, 12, 10, 10), 8f);
 
-            dreamRoot = CreateSection(content, "ActiveDreams", 210f);
-            orderRoot = CreateSection(content, "ActiveOrders", 168f);
-            previewRoot = CreateSection(content, "FocusPreview", 106f);
-            storageRoot = CreateSection(content, "Storage", 124f);
-            modifierRoot = CreateSection(content, "ToolsAndObstacles", 108f);
+            dreamRoot = CreateSection(content, "ActiveDreams", 268f);
+            orderRoot = CreateSection(content, "ActiveOrders", 208f);
+            previewRoot = CreateSection(content, "FocusPreview", 76f);
+            storageRoot = CreateSection(content, "Storage", 86f);
+            modifierRoot = CreateSection(content, "ToolsAndObstacles", 76f);
 
             actionRoot = CreatePanel(root, "ActionPanel", ReleaseVisualStyle.Panel);
-            SetPreferredHeight(actionRoot.gameObject, 226f);
-            AddVerticalLayout((RectTransform)actionRoot, new RectOffset(12, 12, 10, 10), 8f);
-
-            RectTransform footer = CreatePanel(root, "Footer", ReleaseVisualStyle.Panel);
-            SetPreferredHeight(footer.gameObject, 130f);
-            AddVerticalLayout(footer, new RectOffset(12, 12, 8, 8), 6f);
-            messageText = CreateText(footer, "MessageText", string.Empty, 21, TextAnchor.MiddleLeft);
-            feedbackPresenter = GetOrAddComponent<ReleaseFeedbackPresenter>(gameObject);
-            feedbackPresenter.Configure(messageText);
-            RectTransform footerButtons = CreateRow(footer, "FooterButtons", 64f);
-            restartButton = CreateButton(footerButtons, "Restart", "Restart", OnRestart, new Color(0.25f, 0.25f, 0.31f, 1f), null, artCatalog?.NavigationButtonFrame);
-            CreateButton(footerButtons, "Levels", "Levels", ShowLevelSelectScreen, ReleaseVisualStyle.Action, null, artCatalog?.NavigationButtonFrame);
-            CreateButton(footerButtons, "Pause", "Pause", ShowPauseScreen, ReleaseVisualStyle.Settings, null, artCatalog?.NavigationButtonFrame);
-            nextButton = CreateButton(footerButtons, "Next", "Next", OnNext, new Color(0.18f, 0.34f, 0.27f, 1f), null, artCatalog?.SubmitButtonFrame);
+            SetPreferredHeight(actionRoot.gameObject, 166f);
+            AddVerticalLayout((RectTransform)actionRoot, new RectOffset(12, 12, 8, 8), 6f);
         }
 
         private void BuildPauseScreen(RectTransform root)
@@ -543,7 +543,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
             ReleaseGameplayViewModel viewModel = ReleaseGameplayViewModel.Create(state, selection);
             headerText.text = $"{session.CurrentLevel.DisplayName}  {session.CurrentLevel.LevelId}";
             SetTextAndHeight(guidanceText, BuildCompactGameplayGuidance(state), 21);
-            SetTextAndHeight(messageText, ReleaseGameplayCardRenderer.BuildStatusMessage(state, BuildVisibleGameplayMessage(message)), 21);
+            SetGameplayMessage(ReleaseGameplayCardRenderer.BuildStatusMessage(state, BuildVisibleGameplayMessage(message)));
 
             RenderDreams(viewModel);
             RenderOrders(viewModel);
@@ -554,7 +554,9 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
 
             EndDynamicUiRefresh();
             restartButton.interactable = true;
-            nextButton.interactable = state.Status == DynamicRoundStatus.Cleared && session.HasNextLevel;
+            bool canAdvance = state.Status == DynamicRoundStatus.Cleared && session.HasNextLevel;
+            nextButton.gameObject.SetActive(canAdvance);
+            nextButton.interactable = canAdvance;
             RefreshHomeUi();
             RefreshLevelSelectButtons();
         }
@@ -760,9 +762,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
 
         private void RenderDreams(ReleaseGameplayViewModel viewModel)
         {
-            DynamicRoundState state = viewModel.State;
-            CreateSectionTitle(dreamRoot, $"Dream Queue   {state.RemainingMoves} moves   {state.CompletedOrders}/{state.TargetCompletedOrders} orders");
-            RectTransform row = CreateRow(dreamRoot, "ActiveDreamRow", 150f);
+            RectTransform row = CreateRow(dreamRoot, "ActiveDreamRow", 238f);
             IReadOnlyList<ReleaseDreamSlotViewModel> dreams = viewModel.Dreams;
             for (int i = 0; i < dreams.Count; i++)
             {
@@ -781,8 +781,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
 
         private void RenderOrders(ReleaseGameplayViewModel viewModel)
         {
-            CreateSectionTitle(orderRoot, "Orders");
-            RectTransform row = CreateRow(orderRoot, "ActiveOrderRow", 118f);
+            RectTransform row = CreateRow(orderRoot, "ActiveOrderRow", 178f);
             IReadOnlyList<ReleaseOrderSlotViewModel> orders = viewModel.Orders;
             for (int i = 0; i < orders.Count; i++)
             {
@@ -801,21 +800,27 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
 
         private void RenderPreview(ReleaseGameplayViewModel viewModel)
         {
-            CreateSectionTitle(previewRoot, "Focus");
-            CreateText(previewRoot, "FocusText", viewModel.FocusText, 20, TextAnchor.MiddleLeft);
+            bool hasWorkbenchState = !string.Equals(viewModel.FocusText, "Choose dream", StringComparison.Ordinal);
+            previewRoot.gameObject.SetActive(hasWorkbenchState);
+            if (!hasWorkbenchState)
+            {
+                return;
+            }
+
+            CreateText(previewRoot, "FocusText", viewModel.FocusText, 18, TextAnchor.MiddleLeft);
         }
 
         private void RenderStorage(ReleaseGameplayViewModel viewModel)
         {
             DynamicRoundState state = viewModel.State;
-            CreateSectionTitle(storageRoot, "Storage Basket");
-            if (state.StorageSlots.Count == 0)
+            bool shouldShowStorage = ShouldShowStorageStrip(viewModel);
+            storageRoot.gameObject.SetActive(shouldShowStorage);
+            if (!shouldShowStorage || state.StorageSlots.Count == 0)
             {
-                CreateText(storageRoot, "NoStorage", "No storage in this level.", 20, TextAnchor.MiddleLeft);
                 return;
             }
 
-            RectTransform row = CreateRow(storageRoot, "StorageRow", 92f);
+            RectTransform row = CreateRow(storageRoot, "StorageRow", 58f);
             IReadOnlyList<ReleaseStorageSlotViewModel> storageSlots = viewModel.StorageSlots;
             for (int i = 0; i < storageSlots.Count; i++)
             {
@@ -841,8 +846,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
                 return;
             }
 
-            CreateSectionTitle(modifierRoot, "Tools & Obstacles");
-            RectTransform row = CreateRow(modifierRoot, "ModifierRow", 74f);
+            RectTransform row = CreateRow(modifierRoot, "ModifierRow", 54f);
             for (int i = 0; i < modifiers.Count; i++)
             {
                 ReleaseModifierActionViewModel option = modifiers[i];
@@ -864,7 +868,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
 
         private void RenderActions(ReleaseGameplayViewModel viewModel)
         {
-            RectTransform operations = CreateRow(actionRoot, "OperationRow", 70f);
+            RectTransform operations = CreateRow(actionRoot, "OperationRow", 68f);
             IReadOnlyList<ReleaseOperationActionViewModel> operationOptions = viewModel.Operations;
             for (int i = 0; i < operationOptions.Count; i++)
             {
@@ -872,7 +876,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
                 Button button = CreateButton(
                     operations,
                     $"Operation-{option.Operation}",
-                    option.Descriptor.ButtonTitle,
+                    option.Descriptor.Marker,
                     () => OnOperation(option.Operation),
                     option.Descriptor.Color,
                     artCatalog?.GetOperationIcon(option.Operation),
@@ -881,11 +885,11 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
                 AddOperationPreviewChips(button.transform, option);
             }
 
-            RectTransform submitRow = CreateRow(actionRoot, "SubmitStoreRow", 66f);
+            RectTransform submitRow = CreateRow(actionRoot, "SubmitStoreRow", 58f);
             Button submit = CreateButton(
                 submitRow,
                 "Submit",
-                "Submit Order",
+                "Submit",
                 OnSubmit,
                 viewModel.CanSubmit ? ReleaseVisualStyle.Positive : ReleaseVisualStyle.Disabled,
                 null,
@@ -895,11 +899,16 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
             IReadOnlyList<ReleaseStoreActionViewModel> storeActions = viewModel.StoreActions;
             for (int i = 0; i < storeActions.Count; i++)
             {
+                if (!storeActions[i].IsInteractable)
+                {
+                    continue;
+                }
+
                 int storageSlotId = storeActions[i].StorageSlotId;
                 Button store = CreateButton(
                     submitRow,
                     $"Store-{storageSlotId}",
-                    $"Store {storageSlotId + 1}",
+                    $"Store S{storageSlotId + 1}",
                     () => OnStore(storageSlotId),
                     new Color(0.22f, 0.25f, 0.32f, 1f),
                     null,
@@ -912,7 +921,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
                 return;
             }
 
-            RectTransform recallRow = CreateRow(actionRoot, "RecallRow", 58f);
+            RectTransform recallRow = CreateRow(actionRoot, "RecallRow", 52f);
             IReadOnlyList<ReleaseRecallActionViewModel> recallActions = viewModel.RecallActions;
             for (int i = 0; i < recallActions.Count; i++)
             {
@@ -920,7 +929,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
                 Button recall = CreateButton(
                     recallRow,
                     $"Recall-{activeDreamSlotId}",
-                    $"Recall {activeDreamSlotId + 1}",
+                    $"Recall D{activeDreamSlotId + 1}",
                     () => OnRecall(activeDreamSlotId),
                     new Color(0.27f, 0.24f, 0.34f, 1f),
                     null,
@@ -940,6 +949,28 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
 
             AddDreamStateChips(parent, operation.PreviewAttributes, new Vector2(0.46f, 0.12f), new Vector2(0.94f, 0.48f));
             AddCardHalo(parent, ReleaseVisualStyle.Selected, 1.8f);
+        }
+
+        private static bool ShouldShowStorageStrip(ReleaseGameplayViewModel viewModel)
+        {
+            if (viewModel == null || viewModel.State.StorageSlots.Count == 0)
+            {
+                return false;
+            }
+
+            IReadOnlyList<ReleaseStorageSlotViewModel> storageSlots = viewModel.StorageSlots;
+            for (int i = 0; i < storageSlots.Count; i++)
+            {
+                ReleaseStorageSlotViewModel storageSlot = storageSlots[i];
+                if (!storageSlot.Slot.IsEmpty
+                    || storageSlot.IsSelected
+                    || storageSlot.CanStoreSelectedDream)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private Button CreateDreamCard(
@@ -963,10 +994,10 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
 
             Transform root = button.transform;
             AddCardSurfaceTreatment(root, color, true);
-            CreateOverlayText(root, "SlotLabel", $"Dream {slot.SlotId + 1}", 17, TextAnchor.UpperLeft, new Vector2(0f, 0.72f), Vector2.one, new Vector2(12f, -4f), new Vector2(-8f, -6f));
+            CreateOverlayText(root, "SlotLabel", $"D{slot.SlotId + 1}", 15, TextAnchor.UpperLeft, new Vector2(0f, 0.72f), Vector2.one, new Vector2(12f, -4f), new Vector2(-8f, -6f));
             if (slot.IsEmpty)
             {
-                CreateOverlayText(root, "EmptyLabel", "Open Slot", 18, TextAnchor.MiddleCenter, new Vector2(0.12f, 0.18f), new Vector2(0.88f, 0.72f), Vector2.zero, Vector2.zero);
+                CreateOverlayText(root, "EmptyLabel", "Open", 18, TextAnchor.MiddleCenter, new Vector2(0.12f, 0.18f), new Vector2(0.88f, 0.72f), Vector2.zero, Vector2.zero);
                 if (card.CanRecallSelectedStorage)
                 {
                     AddCardHalo(root, ReleaseVisualStyle.Positive, 2.2f);
@@ -976,7 +1007,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
             }
 
             bool locked = card.IsLocked;
-            string status = locked ? "Locked" : string.Empty;
+            string status = locked ? "Lock" : string.Empty;
             if (!string.IsNullOrEmpty(status))
             {
                 CreateOverlayText(root, "StatusLabel", status, 16, TextAnchor.UpperRight, new Vector2(0.35f, 0.72f), Vector2.one, new Vector2(4f, -6f), new Vector2(-12f, -8f));
@@ -1012,7 +1043,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
 
             Transform root = button.transform;
             AddCardSurfaceTreatment(root, color, false);
-            CreateOverlayText(root, "SlotLabel", $"Order {slot.SlotId + 1}", 16, TextAnchor.UpperLeft, new Vector2(0f, 0.64f), Vector2.one, new Vector2(12f, -4f), new Vector2(-8f, -6f));
+            CreateOverlayText(root, "SlotLabel", $"O{slot.SlotId + 1}", 15, TextAnchor.UpperLeft, new Vector2(0f, 0.64f), Vector2.one, new Vector2(12f, -4f), new Vector2(-8f, -6f));
             if (slot.IsEmpty)
             {
                 CreateOverlayText(root, "DoneLabel", "Done", 20, TextAnchor.MiddleCenter, Vector2.zero, Vector2.one, new Vector2(8f, 8f), new Vector2(-8f, -8f));
@@ -1056,10 +1087,9 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
             Transform root = button.transform;
             AddCardSurfaceTreatment(root, color, false);
             AddStorageShelfCue(root, color);
-            CreateOverlayText(root, "SlotLabel", $"Basket {slot.SlotId + 1}", 15, TextAnchor.UpperLeft, new Vector2(0f, 0.6f), Vector2.one, new Vector2(12f, -4f), new Vector2(-8f, -6f));
+            CreateOverlayText(root, "SlotLabel", $"S{slot.SlotId + 1}", 14, TextAnchor.UpperLeft, new Vector2(0f, 0.6f), Vector2.one, new Vector2(12f, -4f), new Vector2(-8f, -6f));
             if (slot.IsEmpty)
             {
-                CreateOverlayText(root, "EmptyLabel", "Empty", 17, TextAnchor.MiddleCenter, new Vector2(0.12f, 0.16f), new Vector2(0.88f, 0.68f), Vector2.zero, Vector2.zero);
                 if (card.CanStoreSelectedDream)
                 {
                     AddCardHalo(root, ReleaseVisualStyle.Positive, 2.2f);
@@ -1353,7 +1383,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
             }
 
             selection.SelectDream(slotId);
-            RefreshUi(selectedDreamSlotId < 0 ? "Dream cleared" : $"Dream {slotId + 1}");
+            RefreshUi(selectedDreamSlotId < 0 ? "Dream cleared" : $"D{slotId + 1} selected");
         }
 
         private void OnOrderSlotSelected(int slotId)
@@ -1367,7 +1397,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
             }
 
             selection.SelectOrder(slotId);
-            RefreshUi(selectedOrderSlotId < 0 ? "Order cleared" : $"Order {slotId + 1}");
+            RefreshUi(selectedOrderSlotId < 0 ? "Order cleared" : $"O{slotId + 1} selected");
         }
 
         private void OnStorageSlotSelected(int slotId)
@@ -1381,7 +1411,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
             }
 
             selection.SelectStorage(slotId);
-            RefreshUi(selectedStorageSlotId < 0 ? "Basket cleared" : $"Basket {slotId + 1}");
+            RefreshUi(selectedStorageSlotId < 0 ? "Basket cleared" : $"S{slotId + 1} selected");
         }
 
         private void OnOperation(DynamicOperation operation)
@@ -1512,7 +1542,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
 
         private string BuildCompactGameplayGuidance(DynamicRoundState state)
         {
-            return $"{state.CompletedOrders}/{state.TargetCompletedOrders} orders   {state.RemainingMoves} moves{BuildGuidedPrompt()}";
+            return $"{state.CompletedOrders}/{state.TargetCompletedOrders} orders   {state.RemainingMoves}M{BuildGuidedPrompt()}";
         }
 
         private string BuildVisibleGameplayMessage(string message)
@@ -1521,10 +1551,25 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
                 || string.Equals(message, session.CurrentLevel.Guidance, StringComparison.Ordinal)
                 || string.Equals(message, session.CurrentLevel.PlayerQuestion, StringComparison.Ordinal))
             {
-                return "Ready";
+                return string.Empty;
             }
 
             return message;
+        }
+
+        private void SetGameplayMessage(string message)
+        {
+            bool hasMessage = !string.IsNullOrWhiteSpace(message);
+            messageText.gameObject.SetActive(hasMessage);
+            if (hasMessage)
+            {
+                SetTextAndHeight(messageText, message, 18);
+            }
+
+            if (gameplayHeader != null)
+            {
+                SetPreferredHeight(gameplayHeader.gameObject, hasMessage ? 132f : 106f);
+            }
         }
 
         private void PresentGameplayFeedback(DynamicActionResult result)
@@ -1916,6 +1961,69 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
         private Button CreateButton(Transform parent, string label, UnityEngine.Events.UnityAction callback, Color color)
         {
             return CreateButton(parent, label, label, callback, color, null, null);
+        }
+
+        private Button CreateCompactButton(
+            Transform parent,
+            string objectName,
+            string label,
+            UnityEngine.Events.UnityAction callback,
+            Color color,
+            float preferredWidth)
+        {
+            GameObject go = CreateUiObject(UiElementKind.Button, parent, objectName, typeof(RectTransform), typeof(Image), typeof(Button));
+            ResetLayoutParticipation(go);
+
+            Image image = go.GetComponent<Image>();
+            image.color = color;
+            image.type = Image.Type.Simple;
+            image.preserveAspect = false;
+            ResetDragComponents(go);
+
+            Button button = go.GetComponent<Button>();
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(callback);
+            ApplyButtonPalette(button, color);
+            ApplyButtonChrome(go, color, false);
+
+            Text text = CreateText(go.transform, "Text", label, 14, TextAnchor.MiddleCenter);
+            RectTransform textRect = text.GetComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = new Vector2(5f, 3f);
+            textRect.offsetMax = new Vector2(-5f, -3f);
+
+            LayoutElement layout = GetOrAddComponent<LayoutElement>(go);
+            layout.ignoreLayout = false;
+            layout.minHeight = 42f;
+            layout.preferredHeight = 44f;
+            layout.minWidth = Mathf.Max(48f, preferredWidth);
+            layout.preferredWidth = Mathf.Max(48f, preferredWidth);
+            layout.flexibleWidth = 0f;
+            return button;
+        }
+
+        private Button CreateHeaderActionButton(
+            RectTransform parent,
+            string objectName,
+            string label,
+            UnityEngine.Events.UnityAction callback,
+            Color color,
+            float rightOffset,
+            float width)
+        {
+            Button button = CreateCompactButton(parent, objectName, label, callback, color, width);
+            RectTransform rect = button.GetComponent<RectTransform>();
+            SetOverlayRect(
+                rect,
+                Vector2.one,
+                Vector2.one,
+                new Vector2(-(rightOffset + width), -50f),
+                new Vector2(-rightOffset, -10f));
+
+            LayoutElement layout = GetOrAddComponent<LayoutElement>(button.gameObject);
+            layout.ignoreLayout = true;
+            return button;
         }
 
         private Button CreateButton(Transform parent, string objectName, string label, UnityEngine.Events.UnityAction callback, Color color)

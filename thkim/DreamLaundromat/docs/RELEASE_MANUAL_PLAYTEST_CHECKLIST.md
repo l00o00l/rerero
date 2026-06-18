@@ -24,11 +24,13 @@
 2026-06-18 기준 수동 플레이테스트 전 자동 baseline은 아래 상태다.
 
 - `release-slice`: `Valid=True`, `Levels=30`, `Errors=0`, `Warnings=0`
-- EditMode: `85/85` 통과
+- EditMode: `88/88` 통과
 - PlayMode: `20/20` 통과
 - Android debug build/install/launch: 통과
 - Android screenshot smoke: 통과
-- 대표 level screenshot batch: `LevelIndexes 0` 기준 통과
+- 대표 level screenshot batch: `LevelIndexes 0,4,9,14,29` 기준 통과
+- gameplay UI는 `Gameplay Layout V2`와 `Action Dock Readability` pass 이후 기준이다.
+  `Submit`, operation marker, compact modifier label이 반영된 빌드로 평가한다.
 
 아직 완료하지 않은 것:
 

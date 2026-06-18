@@ -207,27 +207,27 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
 
             if (dreamSlot != null && !dreamSlot.IsEmpty)
             {
-                lines.Add($"Dream {dreamSlot.SlotId + 1}  {ReleaseVisualDescriptors.DescribeCompact(dreamSlot.Dream.Attributes)}");
+                lines.Add($"D{dreamSlot.SlotId + 1}  {ReleaseVisualDescriptors.DescribeCompact(dreamSlot.Dream.Attributes)}");
             }
 
             if (orderSlot != null && !orderSlot.IsEmpty)
             {
-                lines.Add($"Order {orderSlot.SlotId + 1}  {orderSlot.Order.FulfilledCount}/{orderSlot.Order.Requirement.Count} {ReleaseGameplayCardRenderer.DescribeRequirementCompact(orderSlot.Order.Requirement)}");
+                lines.Add($"O{orderSlot.SlotId + 1}  {orderSlot.Order.FulfilledCount}/{orderSlot.Order.Requirement.Count} {ReleaseGameplayCardRenderer.DescribeRequirementCompact(orderSlot.Order.Requirement)}");
             }
 
             if (canSubmit)
             {
-                lines.Add("Ready");
+                lines.Add("Match");
             }
 
             if (storageSlot != null && !storageSlot.IsEmpty)
             {
-                lines.Add($"Basket {storageSlot.SlotId + 1}  {ReleaseVisualDescriptors.DescribeCompact(storageSlot.Dream.Attributes)}");
+                lines.Add($"S{storageSlot.SlotId + 1}  {ReleaseVisualDescriptors.DescribeCompact(storageSlot.Dream.Attributes)}");
             }
 
             if (lines.Count == 0)
             {
-                lines.Add("Pick dream + order");
+                lines.Add("Choose dream");
             }
 
             return string.Join("\n", lines);
