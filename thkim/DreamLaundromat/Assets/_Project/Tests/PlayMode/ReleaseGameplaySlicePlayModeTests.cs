@@ -75,14 +75,21 @@ namespace Thkim.DreamLaundromat.Tests.PlayMode
 
             AssertObjectExists("ActiveDreams");
             AssertObjectExists("ActiveOrders");
-            AssertObjectExists("FocusPreview");
             AssertObjectExists("ActionPanel");
+            AssertButtonTextEquals("Operation-Wash", "W");
+            AssertButtonTextEquals("Operation-Soothe", "So");
+            AssertButtonTextEquals("Operation-Clarify", "Cl");
+            AssertButtonTextEquals("Operation-Settle", "Se");
             AssertTextExists(labels, "Restart");
             AssertTextExists(labels, "Pause");
-            AssertTextExists(labels, "Dream 1");
-            AssertTextExists(labels, "Order 1");
-            AssertTextExists(labels, "Basket 1");
-            AssertTextExists(labels, "Pick dream + order");
+            AssertTextExists(labels, "D1");
+            AssertTextExists(labels, "O1");
+            AssertObjectDoesNotExist("FocusPreview");
+            AssertTextDoesNotExist(labels, "Choose dream");
+            AssertTextDoesNotExist(labels, "S1");
+            AssertTextDoesNotExist(labels, "Store 1");
+            AssertTextDoesNotExist(labels, "Submit Order");
+            AssertTextDoesNotExist(labels, "Clarify");
             AssertTextDoesNotExist(labels, "D0");
             AssertTextDoesNotExist(labels, "O0");
             AssertTextDoesNotExist(labels, "S0");
@@ -128,9 +135,13 @@ namespace Thkim.DreamLaundromat.Tests.PlayMode
             yield return null;
 
             Text[] labels = Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude);
-            AssertTextExists(labels, "Dream 1");
-            AssertTextExists(labels, "Order 1");
-            AssertTextExists(labels, "Ready");
+            AssertObjectExists("FocusPreview");
+            AssertTextExists(labels, "D1");
+            AssertTextExists(labels, "O1");
+            AssertTextExists(labels, "S1");
+            AssertTextExists(labels, "Match");
+            AssertTextExists(labels, "O1 selected");
+            AssertTextDoesNotExist(labels, "Ready");
             AssertTextDoesNotExist(labels, "Selected D0");
             AssertTextDoesNotExist(labels, "Target O0");
         }
@@ -198,7 +209,7 @@ namespace Thkim.DreamLaundromat.Tests.PlayMode
             Assert.That(game.TryResumeForTest(), Is.True);
             yield return null;
             Assert.That(game.CurrentScreenForTest, Is.EqualTo("Gameplay"));
-            AssertTextExists(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "Ready");
+            AssertTextExists(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "D1");
         }
 
         [UnityTest]
@@ -272,13 +283,15 @@ namespace Thkim.DreamLaundromat.Tests.PlayMode
 
             Assert.That(game.TryLoadLevelForTest(8), Is.True);
             yield return null;
-            AssertTextExists(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "Preview Swap");
-            AssertTextExists(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "Item");
+            AssertTextExists(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "Swap");
+            AssertTextExists(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "Tool");
+            AssertTextDoesNotExist(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "Preview Swap");
 
             Assert.That(game.TryLoadLevelForTest(9), Is.True);
             yield return null;
-            AssertTextExists(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "Locked");
-            AssertTextExists(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "Block");
+            AssertTextExists(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "Lock D1");
+            AssertTextExists(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "Fault");
+            AssertTextDoesNotExist(Object.FindObjectsByType<Text>(FindObjectsInactive.Exclude), "Locked Slot 0");
         }
 
         [UnityTest]
@@ -335,6 +348,21 @@ namespace Thkim.DreamLaundromat.Tests.PlayMode
         private static void AssertObjectExists(string objectName)
         {
             Assert.That(GameObject.Find(objectName), Is.Not.Null, $"Expected active UI object was not found: {objectName}");
+        }
+
+        private static void AssertObjectDoesNotExist(string objectName)
+        {
+            Assert.That(GameObject.Find(objectName), Is.Null, $"Unexpected active UI object was found: {objectName}");
+        }
+
+        private static void AssertButtonTextEquals(string objectName, string expectedText)
+        {
+            GameObject buttonObject = GameObject.Find(objectName);
+            Assert.That(buttonObject, Is.Not.Null, $"Expected active button was not found: {objectName}");
+
+            Text text = buttonObject.GetComponentInChildren<Text>(true);
+            Assert.That(text, Is.Not.Null, $"Expected button text was not found: {objectName}");
+            Assert.That(text.text, Is.EqualTo(expectedText));
         }
 
         private static void AssertSpriteExists(Image[] images, string expectedSpriteName)

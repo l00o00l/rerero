@@ -63,7 +63,7 @@ namespace Thkim.DreamLaundromat.Tests.EditMode.ReleaseSlice
 
             bool canSubmit = ReleaseActionAvailability.CanSubmitSelection(state, selection);
             Assert.That(canSubmit, Is.True);
-            Assert.That(ReleaseActionAvailability.BuildSubmitLabel(selection, canSubmit), Is.EqualTo("Ready"));
+            Assert.That(ReleaseActionAvailability.BuildSubmitLabel(selection, canSubmit), Is.EqualTo("Match"));
         }
 
         [Test]
@@ -111,10 +111,10 @@ namespace Thkim.DreamLaundromat.Tests.EditMode.ReleaseSlice
             ReleaseGameplayViewModel viewModel = ReleaseGameplayViewModel.Create(state, selection);
 
             Assert.That(viewModel.CanSubmit, Is.True);
-            Assert.That(viewModel.SubmitLabel, Is.EqualTo("Ready"));
-            Assert.That(viewModel.FocusText, Does.Contain($"Dream {dreamSlot.SlotId + 1}"));
-            Assert.That(viewModel.FocusText, Does.Contain($"Order {orderSlot.SlotId + 1}"));
-            Assert.That(viewModel.FocusText, Does.Contain("Ready"));
+            Assert.That(viewModel.SubmitLabel, Is.EqualTo("Match"));
+            Assert.That(viewModel.FocusText, Does.Contain($"D{dreamSlot.SlotId + 1}"));
+            Assert.That(viewModel.FocusText, Does.Contain($"O{orderSlot.SlotId + 1}"));
+            Assert.That(viewModel.FocusText, Does.Contain("Match"));
             Assert.That(FindDreamCard(viewModel, dreamSlot.SlotId).IsSelected, Is.True);
             Assert.That(FindOrderCard(viewModel, orderSlot.SlotId).IsSelected, Is.True);
         }
@@ -173,6 +173,57 @@ namespace Thkim.DreamLaundromat.Tests.EditMode.ReleaseSlice
             Assert.That(
                 FindRecallAction(recallViewModel, recallState.ActiveDreams[0].SlotId).IsInteractable,
                 Is.True);
+        }
+
+        [Test]
+        public void GameplayCardRenderer_UsesCompactModifierLabels()
+        {
+            DynamicModifierDefinition swap = DynamicBuiltInModifiers.PreviewSwap();
+            var swapState = new DynamicModifierState
+            {
+                ModifierId = swap.Id,
+                RemainingCharges = 1
+            };
+
+            DynamicModifierDefinition refresh = DynamicBuiltInModifiers.DreamRefresh();
+            var refreshState = new DynamicModifierState
+            {
+                ModifierId = refresh.Id,
+                RemainingCharges = 1,
+                BoundTargetKind = DynamicModifierTargetKind.ActiveDreamSlot,
+                BoundTargetId = -1
+            };
+
+            DynamicModifierDefinition locked = DynamicBuiltInModifiers.LockedActiveDreamSlot(0);
+            var lockedState = new DynamicModifierState
+            {
+                ModifierId = locked.Id,
+                RemainingCharges = 1,
+                BoundTargetKind = DynamicModifierTargetKind.ActiveDreamSlot,
+                BoundTargetId = 0
+            };
+
+            DynamicModifierDefinition softBlock = DynamicBuiltInModifiers.OperationSoftBlock(DynamicOperation.Wash, 2);
+            var softBlockState = new DynamicModifierState
+            {
+                ModifierId = softBlock.Id,
+                RemainingCharges = 2,
+                BoundTargetKind = DynamicModifierTargetKind.Operation,
+                BoundTargetId = (int)DynamicOperation.Wash
+            };
+
+            Assert.That(
+                ReleaseGameplayCardRenderer.BuildModifierLabel(swap, swapState, -1),
+                Is.EqualTo("Tool\nSwap\nx1"));
+            Assert.That(
+                ReleaseGameplayCardRenderer.BuildModifierLabel(refresh, refreshState, -1),
+                Is.EqualTo("Tool\nRefresh\nPick D"));
+            Assert.That(
+                ReleaseGameplayCardRenderer.BuildModifierLabel(locked, lockedState, 0),
+                Is.EqualTo("Fault\nLock D1\nx1"));
+            Assert.That(
+                ReleaseGameplayCardRenderer.BuildModifierLabel(softBlock, softBlockState, (int)DynamicOperation.Wash),
+                Is.EqualTo("Fault\nJam Wash\nx2"));
         }
 
         [Test]

@@ -46,15 +46,19 @@
 - Android build/run, screenshot smoke, level screenshot batch wrapper
 - release UI V1: Home, Level Select, Gameplay, Pause, Result 화면과 generated UI
   surface/background assets
+- Alpha readiness UI pass: gameplay layout 압축, action dock compact label, modifier
+  compact label, operation marker label
 
 현재 상태의 의미:
 
 - 퍼즐 엔진의 가능성은 확인했다.
 - 실제 플레이 가능한 제품형 release slice와 Android 자동 검증 경로가 생겼다.
+- gameplay UI의 큰 text-heavy 문제는 Alpha readiness branch에서 상당 부분 줄였다.
 - 아직 실제 재미, 난이도, 조작감, visual taste는 사람이 30레벨을 플레이하며
   판정해야 한다.
-- 다음 단계는 Phase 14 `Alpha Build`로 바로 넘어가기 전에 PR review와 수동
-  playtest 결과를 바탕으로 레벨/UX를 조정하는 것이다.
+- 다음 단계는 Phase 14 `Alpha Build`로 바로 넘어가기 전에 PR review와
+  `RELEASE_PLAYTEST_RESULTS.md` 기반 수동 playtest 결과를 바탕으로 레벨/UX를 조정하는
+  것이다.
 
 ## Product Constraints
 
@@ -992,21 +996,20 @@ Level acceptance 기준:
 
 ## Next Document
 
-다음 문서는 `DreamLaundromat/docs/RELEASE_GAMEPLAY_SLICE_PLAN.md`가 되어야 한다.
+현재 다음 실행 문서는 `DreamLaundromat/docs/ALPHA_READINESS_PLAN.md`다.
 
-그 문서는 이 로드맵의 Phase 1-5를 실제 구현 가능한 task로 쪼개야 한다.
-제품형 scene과 mobile interaction만으로는 출시형 slice가 성립하지 않으므로,
-최소 fixed level data path와 10-15개 slice level 검증까지 함께 다뤄야 한다.
+`RELEASE_GAMEPLAY_SLICE_PLAN.md`와 `PHASE_6_13_PLAN.md`를 통해 Phase 1-13의 CLI 구현과
+자동 검증 기반은 마련되었다. 이제 Phase 14 `Alpha Build`로 바로 넘어가기 전에,
+다음 항목을 한 번의 Alpha readiness pass로 검증하고 보강해야 한다.
 
-반드시 포함할 내용:
+- UI/비주얼 완성도 V2
+- Game Feel / Direct Manipulation V2
+- `ReleaseGameController`와 UI 구조 hardening
+- 30레벨 수동 playtest와 level/UX tuning
+- 80-120레벨 production loop V1
 
-- 구현 범위와 non-goals
-- scene/UI 구조
-- level pack slice 범위
-- fixed level data 방식
-- 테스트와 Android 검증 계획
-- 수동 QA 체크리스트
-- 사용자 결정이 필요한 항목
+`ALPHA_READINESS_PLAN.md`는 자동 검증으로 확인할 수 있는 항목과 사람이 직접 판단해야
+하는 재미, 조작감, visual taste, haptic/audio 감각을 분리한다.
 
 ## Self-Review
 

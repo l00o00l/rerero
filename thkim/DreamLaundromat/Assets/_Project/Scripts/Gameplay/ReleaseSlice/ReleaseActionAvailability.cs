@@ -183,7 +183,7 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
         {
             if (canSubmit)
             {
-                return "Ready";
+                return "Match";
             }
 
             return selection == null || !selection.HasDreamSelection || !selection.HasOrderSelection

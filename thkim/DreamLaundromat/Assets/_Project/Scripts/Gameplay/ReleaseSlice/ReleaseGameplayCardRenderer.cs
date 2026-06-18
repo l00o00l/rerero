@@ -9,31 +9,31 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
         {
             if (slot.IsEmpty)
             {
-                return $"D{slot.SlotId}\nEmpty";
+                return $"D{slot.SlotId + 1}\nOpen";
             }
 
-            string lockLabel = IsDreamSlotLocked(state, slot.SlotId) ? "\nLocked" : string.Empty;
-            return $"D{slot.SlotId}\n{ReleaseVisualDescriptors.DescribeCompact(slot.Dream.Attributes)}{lockLabel}";
+            string lockLabel = IsDreamSlotLocked(state, slot.SlotId) ? "\nLock" : string.Empty;
+            return $"D{slot.SlotId + 1}\n{ReleaseVisualDescriptors.DescribeCompact(slot.Dream.Attributes)}{lockLabel}";
         }
 
         public static string BuildOrderCardLabel(DynamicOrderSlot slot)
         {
             if (slot.IsEmpty)
             {
-                return $"O{slot.SlotId}\nDone";
+                return $"O{slot.SlotId + 1}\nDone";
             }
 
-            return $"O{slot.SlotId}\n{slot.Order.FulfilledCount}/{slot.Order.Requirement.Count}\n{DescribeRequirementCompact(slot.Order.Requirement)}";
+            return $"O{slot.SlotId + 1}\n{slot.Order.FulfilledCount}/{slot.Order.Requirement.Count}\n{DescribeRequirementCompact(slot.Order.Requirement)}";
         }
 
         public static string BuildStorageCardLabel(DynamicStorageSlot slot)
         {
             if (slot.IsEmpty)
             {
-                return $"S{slot.SlotId}\nEmpty";
+                return $"S{slot.SlotId + 1}";
             }
 
-            return $"S{slot.SlotId}\nStored\n{ReleaseVisualDescriptors.DescribeCompact(slot.Dream.Attributes)}";
+            return $"S{slot.SlotId + 1}\nStored\n{ReleaseVisualDescriptors.DescribeCompact(slot.Dream.Attributes)}";
         }
 
         public static string BuildOperationLabel(
@@ -72,33 +72,37 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
             DynamicModifierState modifierState,
             int targetId)
         {
-            int charges = modifierState?.RemainingCharges ?? 0;
+            string countLabel = BuildModifierCountLabel(definition, modifierState);
+            int displayTargetId = definition.Effect == DynamicModifierEffect.RefreshActiveDream
+                ? targetId
+                : modifierState?.BoundTargetId ?? targetId;
             if (definition.Type == DynamicModifierType.Item)
             {
-                if (definition.Effect == DynamicModifierEffect.RefreshActiveDream && targetId < 0)
+                if (definition.Effect == DynamicModifierEffect.RefreshActiveDream && displayTargetId < 0)
                 {
-                    return $"Item\n{definition.DisplayName}\nPick dream";
+                    return JoinLabelLines("Tool", BuildModifierActionLabel(definition, displayTargetId), "Pick D");
                 }
 
-                return $"Item\n{definition.DisplayName}\n{charges}";
+                return JoinLabelLines("Tool", BuildModifierActionLabel(definition, displayTargetId), countLabel);
             }
 
-            string state = modifierState == null || modifierState.IsResolved
-                ? "resolved"
-                : $"{modifierState.RemainingCharges}";
-            return $"Block\n{definition.DisplayName}\n{state}";
+            return JoinLabelLines("Fault", BuildModifierActionLabel(definition, displayTargetId), countLabel);
         }
 
         public static string BuildStatusMessage(DynamicRoundState state, string message)
         {
             if (state.Status == DynamicRoundStatus.Cleared)
             {
-                return $"Cleared\nOrders complete. {message}";
+                return string.IsNullOrWhiteSpace(message)
+                    ? "Cleared\nOrders complete."
+                    : $"Cleared\nOrders complete. {message}";
             }
 
             if (state.Status == DynamicRoundStatus.Failed)
             {
-                return $"Failed\n{state.FailureReason}. {message}";
+                return string.IsNullOrWhiteSpace(message)
+                    ? $"Failed\n{state.FailureReason}."
+                    : $"Failed\n{state.FailureReason}. {message}";
             }
 
             return message;
@@ -191,6 +195,69 @@ namespace Thkim.DreamLaundromat.Gameplay.ReleaseSlice
             }
 
             return false;
+        }
+
+        private static string BuildModifierActionLabel(DynamicModifierDefinition definition, int targetId)
+        {
+            return definition.Effect switch
+            {
+                DynamicModifierEffect.PreviewSwap => "Swap",
+                DynamicModifierEffect.RefreshActiveDream => targetId >= 0
+                    ? $"Refresh D{targetId + 1}"
+                    : "Refresh",
+                DynamicModifierEffect.LockActiveDreamSlot => targetId >= 0
+                    ? $"Lock D{targetId + 1}"
+                    : "Lock",
+                DynamicModifierEffect.PinOrderSlot => targetId >= 0
+                    ? $"Pin O{targetId + 1}"
+                    : "Pin",
+                DynamicModifierEffect.SoftBlockOperation => BuildSoftBlockLabel(targetId),
+                _ => definition.DisplayName
+            };
+        }
+
+        private static string BuildModifierCountLabel(
+            DynamicModifierDefinition definition,
+            DynamicModifierState modifierState)
+        {
+            if (modifierState == null)
+            {
+                return definition.Charges > 0 ? $"x{definition.Charges}" : string.Empty;
+            }
+
+            if (modifierState.IsResolved)
+            {
+                return "done";
+            }
+
+            return modifierState.RemainingCharges > 0
+                ? $"x{modifierState.RemainingCharges}"
+                : string.Empty;
+        }
+
+        private static string BuildSoftBlockLabel(int targetId)
+        {
+            if (targetId < 0)
+            {
+                return "Jam";
+            }
+
+            var operation = (DynamicOperation)targetId;
+            return $"Jam {ReleaseVisualDescriptors.ForOperation(operation).ButtonTitle}";
+        }
+
+        private static string JoinLabelLines(params string[] lines)
+        {
+            var values = new List<string>();
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(lines[i]))
+                {
+                    values.Add(lines[i]);
+                }
+            }
+
+            return string.Join("\n", values);
         }
     }
 }

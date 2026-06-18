@@ -155,7 +155,7 @@ namespace Thkim.DreamLaundromat.Tests.EditMode.ReleaseSlice
                 new DynamicDreamAttributes(DreamTaint.Nightmare, DreamMood.Anxious, DreamClarity.Blurry, DreamStability.Stable),
                 DynamicOperation.Wash);
 
-            Assert.That(dreamLabel, Does.StartWith($"D{dreamSlot.SlotId}"));
+            Assert.That(dreamLabel, Does.StartWith($"D{dreamSlot.SlotId + 1}"));
             Assert.That(dreamLabel, Does.Not.Contain("Laundry tag"));
             Assert.That(statusLabel, Is.EqualTo("Ready."));
             Assert.That(preview.Taint, Is.EqualTo(DreamTaint.Clean));
