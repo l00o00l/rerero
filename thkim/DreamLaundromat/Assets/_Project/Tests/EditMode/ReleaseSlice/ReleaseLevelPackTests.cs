@@ -63,6 +63,28 @@ namespace Thkim.DreamLaundromat.Tests.EditMode.ReleaseSlice
         }
 
         [Test]
+        public void GeneratedTaggedLevels_UseBakedReleaseSources()
+        {
+            ReleaseLevelPack pack = ReleaseLevelPack.CreateDefault();
+            int generatedLevelCount = 0;
+
+            for (int i = 0; i < pack.Levels.Count; i++)
+            {
+                ReleaseLevelDefinition level = pack.Levels[i];
+                if (!level.HasTutorialTag("generated"))
+                {
+                    continue;
+                }
+
+                generatedLevelCount++;
+                Assert.That(level.SourceId, Does.StartWith("candidate.baked."), level.LevelId);
+                Assert.That(level.CreateRoundDefinition().RoundId, Is.EqualTo(level.LevelId));
+            }
+
+            Assert.That(generatedLevelCount, Is.GreaterThan(0));
+        }
+
+        [Test]
         public void GuidedTutorialRules_MatchSolverPrefix()
         {
             ReleaseLevelPack pack = ReleaseLevelPack.CreateDefault();

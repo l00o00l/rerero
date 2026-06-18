@@ -265,10 +265,22 @@ namespace Thkim.DreamLaundromat.Editor.ReleaseSlice
             importer.mipmapEnabled = false;
             importer.alphaIsTransparency = true;
             importer.sRGBTexture = true;
-            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.textureCompression = TextureImporterCompression.Compressed;
+            importer.compressionQuality = 50;
             importer.wrapMode = TextureWrapMode.Clamp;
             importer.filterMode = FilterMode.Bilinear;
-            importer.maxTextureSize = Mathf.NextPowerOfTwo(Mathf.Max(width, height));
+            int maxTextureSize = Mathf.NextPowerOfTwo(Mathf.Max(width, height));
+            importer.maxTextureSize = maxTextureSize;
+            importer.SetPlatformTextureSettings(new TextureImporterPlatformSettings
+            {
+                name = "Android",
+                overridden = true,
+                maxTextureSize = maxTextureSize,
+                format = TextureImporterFormat.ETC2_RGBA8,
+                textureCompression = TextureImporterCompression.Compressed,
+                compressionQuality = 50,
+                allowsAlphaSplitting = false
+            });
             importer.SaveAndReimport();
         }
 
