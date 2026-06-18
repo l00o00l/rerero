@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ab61adba871f314384287782c96740f, type: 3}
+  m_Name: ReleaseUiArtCatalog
+  m_EditorClassIdentifier: Thkim.DreamLaundromat::Thkim.DreamLaundromat.Gameplay.ReleaseSlice.ReleaseUiArtCatalog
+  gameplayBackground: {fileID: 21300000, guid: 2d1ce02ea79ef804dba843bd6ec226b4, type: 3}
+  titleBackground: {fileID: 21300000, guid: 24304e52d5098694cb5c300cc96b2eaa, type: 3}
+  levelSelectBackground: {fileID: 21300000, guid: 2ebddfd47c030714688f58aff9369e9e, type: 3}
+  dreamCardFrame: {fileID: 21300000, guid: 19cdd135f3445e1459945ba1385bcd73, type: 3}
+  orderSheetFrame: {fileID: 21300000, guid: bb4b3c6c81dd74f42893f006e43dddd5, type: 3}
+  storageShelfFrame: {fileID: 21300000, guid: b6debc10f98516b498fe5072244e2448, type: 3}
+  operationButtonFrame: {fileID: 21300000, guid: c5521fecb72b57841a0d3ae61c621c16, type: 3}
+  submitButtonFrame: {fileID: 21300000, guid: acf751c23af634a48971db27475ed60a, type: 3}
+  storageActionFrame: {fileID: 21300000, guid: f0c224b40ce397d48835cf50ce9975e3, type: 3}
+  navigationButtonFrame: {fileID: 21300000, guid: 83234bd090b0dc847a52a1c5cc676b50, type: 3}
+  stateTaintClean: {fileID: 21300000, guid: 488224f00e0e938428e9c84cbc2bad74, type: 3}
+  stateTaintNightmare: {fileID: 21300000, guid: 27595c60ee15fce42a08417c0b737478, type: 3}
+  stateMoodCalm: {fileID: 21300000, guid: 03682d53608021c4d8882decaf46e1f1, type: 3}
+  stateMoodAnxious: {fileID: 21300000, guid: a0a5af297c21810418653a88fe73f110, type: 3}
+  stateClarityVivid: {fileID: 21300000, guid: 4b7ace0c8a1cc804c9e863aec31fde4c, type: 3}
+  stateClarityBlurry: {fileID: 21300000, guid: 0bbdc502e1c5a634c9a309b5cd08689b, type: 3}
+  stateStabilityStable: {fileID: 21300000, guid: 75b366559a2a6974b80debf71444dd4c, type: 3}
+  stateStabilityUnsettled: {fileID: 21300000, guid: bde9174975dd78f4498899a4cf254eaf, type: 3}
+  operationWash: {fileID: 21300000, guid: c7c249d166102ae4e83edb8ee7f51b1f, type: 3}
+  operationSoothe: {fileID: 21300000, guid: 7ef0fada622cafa45827c59d2522f8a2, type: 3}
+  operationClarify: {fileID: 21300000, guid: d9606f5dc88bb6440b7982da6f8dde77, type: 3}
+  operationSettle: {fileID: 21300000, guid: 95985ede9e5284c458fc174a71c385a0, type: 3}
+  toolPreviewSwap: {fileID: 21300000, guid: a76ce9f7c76c69745a76d9b242ad240e, type: 3}
+  toolDreamRefresh: {fileID: 21300000, guid: 9c0f6f2f4e9d25747b61da59a529f9b3, type: 3}
+  obstacleLockedSlot: {fileID: 21300000, guid: 413c7a02c91061340aeee406a7357358, type: 3}
+  obstacleOrderPin: {fileID: 21300000, guid: 8e4c8bbde8144ca4a941f4d492ffdf90, type: 3}
+  obstacleSoftBlock: {fileID: 21300000, guid: 997e363779aad12439091c5ecbb641de, type: 3}
+  effectClearGlow: {fileID: 21300000, guid: 8cd78e7a890300049b014598a4a3b7bb, type: 3}
+  effectFailWarning: {fileID: 21300000, guid: 6ee45efe56437c74b91154b6034b7ff3, type: 3}

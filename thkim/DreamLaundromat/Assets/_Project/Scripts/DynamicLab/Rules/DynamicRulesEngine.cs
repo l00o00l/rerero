@@ -26,10 +26,19 @@ namespace Thkim.DreamLaundromat.DynamicLab
                 return canApply;
             }
 
+            bool consumesMove = DynamicModifierPipeline.ConsumesMove(state, action);
             DynamicActionResult result;
             if (action.Type == DynamicActionType.UseItem)
             {
                 result = DynamicModifierPipeline.ResolveManualAction(state, action);
+                if (result.Success && consumesMove)
+                {
+                    DynamicActionResult afterAction = DynamicModifierPipeline.AfterAction(state, action);
+                    if (!afterAction.Success)
+                    {
+                        return afterAction;
+                    }
+                }
             }
             else
             {
@@ -65,7 +74,7 @@ namespace Thkim.DreamLaundromat.DynamicLab
                 return result;
             }
 
-            if (DynamicModifierPipeline.ConsumesMove(state, action))
+            if (consumesMove)
             {
                 state.RemainingMoves--;
             }

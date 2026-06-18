@@ -179,7 +179,7 @@ namespace Thkim.DreamLaundromat.Tests.EditMode.DynamicLab
         {
             DynamicRoundDefinition[] rounds = DynamicSampleRounds.CreateAll();
 
-            Assert.That(rounds, Has.Length.EqualTo(7));
+            Assert.That(rounds, Has.Length.EqualTo(10));
             for (int i = 0; i < rounds.Length; i++)
             {
                 DynamicRoundState state = DynamicRoundInitializer.CreateInitialState(rounds[i]);

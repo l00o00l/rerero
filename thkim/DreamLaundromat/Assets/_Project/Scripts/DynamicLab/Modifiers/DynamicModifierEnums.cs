@@ -27,7 +27,10 @@ namespace Thkim.DreamLaundromat.DynamicLab
     public enum DynamicModifierEffect
     {
         PreviewSwap,
-        LockActiveDreamSlot
+        LockActiveDreamSlot,
+        PinOrderSlot,
+        RefreshActiveDream,
+        SoftBlockOperation
     }
 
     public enum DynamicModifierTargetKind
@@ -35,6 +38,7 @@ namespace Thkim.DreamLaundromat.DynamicLab
         None,
         ActiveDreamSlot,
         StorageSlot,
-        OrderSlot
+        OrderSlot,
+        Operation
     }
 }

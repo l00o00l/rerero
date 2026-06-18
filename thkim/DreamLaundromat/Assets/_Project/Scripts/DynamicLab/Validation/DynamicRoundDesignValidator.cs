@@ -135,13 +135,14 @@ namespace Thkim.DreamLaundromat.DynamicLab
 
             int dreamCount = CountDreams(definition);
             int orderCount = CountOrders(definition);
-            bool dreamStreamExtendsPastVisibleSlots = dreamCount
-                > definition.StreamConfig.ActiveDreamSlots + definition.StreamConfig.DreamPreviewCount;
-            bool orderStreamExtendsPastVisibleSlots = orderCount
-                > definition.StreamConfig.ActiveOrderSlots + definition.StreamConfig.OrderPreviewCount;
+            // Preview is decision-relevant as soon as it exposes an upcoming item
+            // beyond the currently active slots. It does not need another hidden
+            // item behind the preview window.
+            bool dreamPreviewShowsUpcomingItem = dreamCount > definition.StreamConfig.ActiveDreamSlots;
+            bool orderPreviewShowsUpcomingItem = orderCount > definition.StreamConfig.ActiveOrderSlots;
 
-            return (definition.StreamConfig.DreamPreviewCount > 0 && dreamStreamExtendsPastVisibleSlots)
-                || (definition.StreamConfig.OrderPreviewCount > 0 && orderStreamExtendsPastVisibleSlots);
+            return (definition.StreamConfig.DreamPreviewCount > 0 && dreamPreviewShowsUpcomingItem)
+                || (definition.StreamConfig.OrderPreviewCount > 0 && orderPreviewShowsUpcomingItem);
         }
 
         private static int CountDreams(DynamicRoundDefinition definition)

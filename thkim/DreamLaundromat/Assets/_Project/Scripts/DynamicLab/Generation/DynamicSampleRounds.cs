@@ -12,7 +12,10 @@ namespace Thkim.DreamLaundromat.DynamicLab
                 CreateStoragePressureRound(),
                 CreateReversalOrderRound(),
                 CreatePreviewSwapRequiredRound(),
-                CreateLockedSlotRound()
+                CreateLockedSlotRound(),
+                CreateOrderPinRound(),
+                CreateDreamRefreshRound(),
+                CreateOperationSoftBlockRound()
             };
         }
 
@@ -40,7 +43,7 @@ namespace Thkim.DreamLaundromat.DynamicLab
             return CreateRound(
                 "DLAB-B-operation-ordering",
                 2202,
-                12,
+                11,
                 1,
                 new[]
                 {
@@ -58,7 +61,7 @@ namespace Thkim.DreamLaundromat.DynamicLab
             return CreateRound(
                 "DLAB-C-stream-timing",
                 3303,
-                12,
+                10,
                 3,
                 new[]
                 {
@@ -78,7 +81,7 @@ namespace Thkim.DreamLaundromat.DynamicLab
             DynamicRoundDefinition round = CreateRound(
                 "DLAB-D-storage-pressure",
                 4404,
-                14,
+                11,
                 2,
                 new[]
                 {
@@ -119,7 +122,7 @@ namespace Thkim.DreamLaundromat.DynamicLab
             var round = CreateRound(
                 "DLMOD-A-preview-swap-required",
                 2,
-                3,
+                4,
                 2,
                 new[]
                 {
@@ -163,6 +166,83 @@ namespace Thkim.DreamLaundromat.DynamicLab
             round.StreamConfig.OrderPreviewCount = 0;
             round.StorageConfig.StorageSlotCount = 0;
             round.Modifiers = new[] { DynamicBuiltInModifiers.LockedActiveDreamSlot(0) };
+            return round;
+        }
+
+        public static DynamicRoundDefinition CreateOrderPinRound()
+        {
+            var round = CreateRound(
+                "DLMOD-C-order-pin",
+                8808,
+                5,
+                1,
+                new[]
+                {
+                    Dream(CleanCalm(DreamClarity.Blurry, DreamStability.Stable), 1)
+                },
+                new[]
+                {
+                    Order(StableOrder(true, DreamMood.Calm, true, DreamClarity.Blurry), 1)
+                });
+            round.StreamConfig.ActiveDreamSlots = 1;
+            round.StreamConfig.ActiveOrderSlots = 1;
+            round.StreamConfig.DreamPreviewCount = 0;
+            round.StreamConfig.OrderPreviewCount = 0;
+            round.StorageConfig.StorageSlotCount = 1;
+            round.ActionSet = new[] { DynamicOperation.Settle };
+            round.Modifiers = new[] { DynamicBuiltInModifiers.OrderPin(0) };
+            return round;
+        }
+
+        public static DynamicRoundDefinition CreateDreamRefreshRound()
+        {
+            var round = CreateRound(
+                "DLMOD-D-dream-refresh",
+                9909,
+                4,
+                1,
+                new[]
+                {
+                    Dream(CleanCalm(DreamClarity.Blurry, DreamStability.Unsettled), 1),
+                    Dream(CleanCalm(DreamClarity.Vivid, DreamStability.Stable), 1),
+                    Dream(CleanAnxious(DreamClarity.Blurry, DreamStability.Stable), 1)
+                },
+                new[]
+                {
+                    Order(StableOrder(true, DreamMood.Calm, true, DreamClarity.Vivid), 1)
+                });
+            round.StreamConfig.ActiveDreamSlots = 1;
+            round.StreamConfig.ActiveOrderSlots = 1;
+            round.StreamConfig.DreamPreviewCount = 1;
+            round.StreamConfig.OrderPreviewCount = 0;
+            round.StorageConfig.StorageSlotCount = 0;
+            round.ActionSet = new[] { DynamicOperation.Settle };
+            round.Modifiers = new[] { DynamicBuiltInModifiers.DreamRefresh() };
+            return round;
+        }
+
+        public static DynamicRoundDefinition CreateOperationSoftBlockRound()
+        {
+            var round = CreateRound(
+                "DLMOD-E-operation-soft-block",
+                9910,
+                6,
+                1,
+                new[]
+                {
+                    Dream(CleanCalm(DreamClarity.Blurry, DreamStability.Unsettled), 1)
+                },
+                new[]
+                {
+                    Order(StableOrder(true, DreamMood.Calm, true, DreamClarity.Blurry), 1)
+                });
+            round.StreamConfig.ActiveDreamSlots = 1;
+            round.StreamConfig.ActiveOrderSlots = 1;
+            round.StreamConfig.DreamPreviewCount = 0;
+            round.StreamConfig.OrderPreviewCount = 0;
+            round.StorageConfig.StorageSlotCount = 1;
+            round.ActionSet = new[] { DynamicOperation.Settle };
+            round.Modifiers = new[] { DynamicBuiltInModifiers.OperationSoftBlock(DynamicOperation.Settle) };
             return round;
         }
 

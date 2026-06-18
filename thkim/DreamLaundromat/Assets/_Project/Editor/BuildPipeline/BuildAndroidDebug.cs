@@ -8,7 +8,7 @@ namespace Thkim.DreamLaundromat.Editor.BuildPipeline
 {
     public static class BuildAndroidDebug
     {
-        private const string MainScenePath = "Assets/_Project/Scenes/MainGame.unity";
+        private const string MainScenePath = "Assets/_Project/Scenes/ReleaseGameplaySlice.unity";
 
         [MenuItem("DreamLaundromat/Build/Android Debug APK")]
         public static void BuildApk()

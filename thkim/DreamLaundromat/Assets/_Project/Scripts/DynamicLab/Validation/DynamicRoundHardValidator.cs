@@ -57,7 +57,8 @@ namespace Thkim.DreamLaundromat.DynamicLab
             {
                 result.AddError("Dream preview count must not be negative.");
             }
-            else if (definition.StreamConfig.DreamPreviewCount > definition.StreamConfig.ActiveDreamSlots)
+            else if (definition.StreamConfig.DreamPreviewCount > definition.StreamConfig.ActiveDreamSlots
+                && !HasModifierEffect(definition, DynamicModifierEffect.PreviewSwap))
             {
                 result.AddWarning("Dream preview count exceeds active dream slots.");
             }
@@ -193,11 +194,43 @@ namespace Thkim.DreamLaundromat.DynamicLab
                 {
                     ValidateLockedSlot(definition, modifier, result);
                 }
+                else if (modifier.Effect == DynamicModifierEffect.PinOrderSlot)
+                {
+                    ValidateOrderPin(definition, modifier, result);
+                }
+                else if (modifier.Effect == DynamicModifierEffect.RefreshActiveDream)
+                {
+                    ValidateDreamRefresh(modifier, result);
+                }
+                else if (modifier.Effect == DynamicModifierEffect.SoftBlockOperation)
+                {
+                    ValidateOperationSoftBlock(modifier, result);
+                }
                 else
                 {
                     result.AddError($"Modifier {modifier.Id} effect is not supported.");
                 }
             }
+        }
+
+        private static bool HasModifierEffect(
+            DynamicRoundDefinition definition,
+            DynamicModifierEffect effect)
+        {
+            if (definition.Modifiers == null)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < definition.Modifiers.Length; i++)
+            {
+                if (definition.Modifiers[i] != null && definition.Modifiers[i].Effect == effect)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static bool HasPreviousModifierWithId(
@@ -246,6 +279,57 @@ namespace Thkim.DreamLaundromat.DynamicLab
                 && (modifier.TargetId < 0 || modifier.TargetId >= definition.StreamConfig.ActiveDreamSlots))
             {
                 result.AddError("Locked Slot target must point to an existing active dream slot.");
+            }
+        }
+
+        private static void ValidateOrderPin(
+            DynamicRoundDefinition definition,
+            DynamicModifierDefinition modifier,
+            DynamicValidationResult result)
+        {
+            if (modifier.Type != DynamicModifierType.Obstacle
+                || modifier.Trigger != DynamicModifierTrigger.CanApplyAction
+                || modifier.Scope != DynamicModifierScope.Order
+                || modifier.TargetKind != DynamicModifierTargetKind.OrderSlot)
+            {
+                result.AddError("Order Pin must be a can-apply obstacle scoped to an active order slot.");
+            }
+
+            if (definition.StreamConfig != null
+                && (modifier.TargetId < 0 || modifier.TargetId >= definition.StreamConfig.ActiveOrderSlots))
+            {
+                result.AddError("Order Pin target must point to an existing active order slot.");
+            }
+        }
+
+        private static void ValidateDreamRefresh(
+            DynamicModifierDefinition modifier,
+            DynamicValidationResult result)
+        {
+            if (modifier.Type != DynamicModifierType.Item
+                || modifier.Trigger != DynamicModifierTrigger.Manual
+                || modifier.Scope != DynamicModifierScope.Dream
+                || modifier.TargetKind != DynamicModifierTargetKind.ActiveDreamSlot)
+            {
+                result.AddError("Dream Refresh must be a manual item scoped to an active dream target.");
+            }
+        }
+
+        private static void ValidateOperationSoftBlock(
+            DynamicModifierDefinition modifier,
+            DynamicValidationResult result)
+        {
+            if (modifier.Type != DynamicModifierType.Obstacle
+                || modifier.Trigger != DynamicModifierTrigger.CanApplyAction
+                || modifier.Scope != DynamicModifierScope.Round
+                || modifier.TargetKind != DynamicModifierTargetKind.Operation)
+            {
+                result.AddError("Operation Soft Block must be a can-apply obstacle scoped to an operation.");
+            }
+
+            if (!System.Enum.IsDefined(typeof(DynamicOperation), modifier.TargetId))
+            {
+                result.AddError("Operation Soft Block target must point to an existing operation.");
             }
         }
     }
