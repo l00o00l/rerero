@@ -37,7 +37,11 @@ namespace Thkim.DreamLaundromat.DynamicLab
                 }
 
                 DynamicModifierState modifierState = FindState(state, definition.Id);
-                if (CanResolveManualItem(state, definition, modifierState).Success)
+                if (definition.Effect == DynamicModifierEffect.RefreshActiveDream)
+                {
+                    AddDreamRefreshActions(state, actions, definition, modifierState);
+                }
+                else if (CanResolveManualItem(state, definition, modifierState, definition.TargetId).Success)
                 {
                     actions.Add(DynamicPlayerAction.UseItem(definition.Id, definition.TargetId));
                 }
@@ -69,6 +73,20 @@ namespace Thkim.DreamLaundromat.DynamicLab
                     return DynamicActionResult.Failed(
                         $"Active dream slot {modifierState.BoundTargetId} is locked.");
                 }
+
+                if (definition.Effect == DynamicModifierEffect.PinOrderSlot
+                    && BlocksPinnedOrderSlot(modifierState, action))
+                {
+                    return DynamicActionResult.Failed(
+                        $"Active order slot {modifierState.BoundTargetId} is pinned.");
+                }
+
+                if (definition.Effect == DynamicModifierEffect.SoftBlockOperation
+                    && BlocksSoftBlockedOperation(modifierState, action))
+                {
+                    DynamicOperation operation = (DynamicOperation)modifierState.BoundTargetId;
+                    return DynamicActionResult.Failed($"{operation} is temporarily blocked.");
+                }
             }
 
             return DynamicActionResult.Succeeded("Action allowed.");
@@ -89,17 +107,38 @@ namespace Thkim.DreamLaundromat.DynamicLab
             }
 
             DynamicModifierState modifierState = FindState(state, definition.Id);
-            DynamicActionResult canResolve = CanResolveManualItem(state, definition, modifierState);
+            DynamicActionResult canResolve = CanResolveManualItem(
+                state,
+                definition,
+                modifierState,
+                action.ModifierTargetId);
             if (!canResolve.Success)
             {
                 return canResolve;
             }
 
-            DynamicDreamState first = state.DreamPreview[0];
-            state.DreamPreview[0] = state.DreamPreview[1];
-            state.DreamPreview[1] = first;
-            ConsumeCharge(modifierState);
-            return DynamicActionResult.Succeeded("Preview order swapped.");
+            if (definition.Effect == DynamicModifierEffect.PreviewSwap)
+            {
+                DynamicDreamState first = state.DreamPreview[0];
+                state.DreamPreview[0] = state.DreamPreview[1];
+                state.DreamPreview[1] = first;
+                ConsumeCharge(modifierState);
+                return DynamicActionResult.Succeeded("Preview order swapped.");
+            }
+
+            if (definition.Effect == DynamicModifierEffect.RefreshActiveDream)
+            {
+                DynamicDreamSlot slot = state.FindActiveDreamSlot(action.ModifierTargetId);
+                DynamicDreamState refreshedDream = slot.Dream;
+                slot.Dream = null;
+                state.DreamDrawPile.Add(refreshedDream.Clone());
+                DynamicRoundStreams.FillDreamPreview(state);
+                DynamicRoundStreams.FillActiveDreamSlots(state);
+                ConsumeCharge(modifierState);
+                return DynamicActionResult.Succeeded("Dream refreshed into the later stream.");
+            }
+
+            return DynamicActionResult.Failed("Unsupported item effect.");
         }
 
         public static DynamicActionResult BeforeAction(DynamicRoundState state, DynamicPlayerAction action)
@@ -109,7 +148,8 @@ namespace Thkim.DreamLaundromat.DynamicLab
 
         public static DynamicActionResult AfterAction(DynamicRoundState state, DynamicPlayerAction action)
         {
-            return DynamicActionResult.Succeeded("No modifier after-action effects.");
+            AdvanceTimedObstacles(state);
+            return DynamicActionResult.Succeeded("Timed modifiers advanced.");
         }
 
         public static bool ConsumesMove(DynamicRoundState state, DynamicPlayerAction action)
@@ -149,10 +189,28 @@ namespace Thkim.DreamLaundromat.DynamicLab
             return null;
         }
 
+        private static void AddDreamRefreshActions(
+            DynamicRoundState state,
+            List<DynamicPlayerAction> actions,
+            DynamicModifierDefinition definition,
+            DynamicModifierState modifierState)
+        {
+            for (int i = 0; i < state.ActiveDreams.Count; i++)
+            {
+                DynamicDreamSlot slot = state.ActiveDreams[i];
+                if (!slot.IsEmpty
+                    && CanResolveManualItem(state, definition, modifierState, slot.SlotId).Success)
+                {
+                    actions.Add(DynamicPlayerAction.UseItem(definition.Id, slot.SlotId));
+                }
+            }
+        }
+
         private static DynamicActionResult CanResolveManualItem(
             DynamicRoundState state,
             DynamicModifierDefinition definition,
-            DynamicModifierState modifierState)
+            DynamicModifierState modifierState,
+            int targetId)
         {
             if (definition == null)
             {
@@ -170,17 +228,82 @@ namespace Thkim.DreamLaundromat.DynamicLab
                 return DynamicActionResult.Failed("Item has no remaining charges.");
             }
 
-            if (definition.Effect != DynamicModifierEffect.PreviewSwap)
+            if (definition.Effect == DynamicModifierEffect.PreviewSwap)
             {
-                return DynamicActionResult.Failed("Unsupported item effect.");
+                if (state.DreamPreview.Count < 2)
+                {
+                    return DynamicActionResult.Failed("Preview Swap needs at least two dream previews.");
+                }
+
+                return DynamicActionResult.Succeeded("Item can be resolved.");
             }
 
-            if (state.DreamPreview.Count < 2)
+            if (definition.Effect == DynamicModifierEffect.RefreshActiveDream)
             {
-                return DynamicActionResult.Failed("Preview Swap needs at least two dream previews.");
+                DynamicDreamSlot slot = state.FindActiveDreamSlot(targetId);
+                if (slot == null || slot.IsEmpty)
+                {
+                    return DynamicActionResult.Failed("Dream Refresh needs an active dream target.");
+                }
+
+                if (state.DreamPreview.Count == 0 && state.NextDreamIndex >= state.DreamDrawPile.Count)
+                {
+                    return DynamicActionResult.Failed("Dream Refresh needs another dream in the stream.");
+                }
+
+                return DynamicActionResult.Succeeded("Item can be resolved.");
             }
 
-            return DynamicActionResult.Succeeded("Item can be resolved.");
+            return DynamicActionResult.Failed("Unsupported item effect.");
+        }
+
+        private static void AdvanceTimedObstacles(DynamicRoundState state)
+        {
+            for (int i = 0; i < state.ModifierDefinitions.Length; i++)
+            {
+                DynamicModifierDefinition definition = state.ModifierDefinitions[i];
+                if (definition.Type != DynamicModifierType.Obstacle
+                    || definition.Trigger != DynamicModifierTrigger.CanApplyAction)
+                {
+                    continue;
+                }
+
+                if (definition.Effect != DynamicModifierEffect.PinOrderSlot
+                    && definition.Effect != DynamicModifierEffect.SoftBlockOperation)
+                {
+                    continue;
+                }
+
+                DynamicModifierState modifierState = FindState(state, definition.Id);
+                if (modifierState == null || modifierState.IsResolved)
+                {
+                    continue;
+                }
+
+                ConsumeCharge(modifierState);
+            }
+        }
+
+        private static bool BlocksPinnedOrderSlot(DynamicModifierState modifierState, DynamicPlayerAction action)
+        {
+            if (modifierState.BoundTargetKind != DynamicModifierTargetKind.OrderSlot)
+            {
+                return false;
+            }
+
+            return action.Type == DynamicActionType.SubmitDream
+                && action.ActiveOrderSlotId == modifierState.BoundTargetId;
+        }
+
+        private static bool BlocksSoftBlockedOperation(DynamicModifierState modifierState, DynamicPlayerAction action)
+        {
+            if (modifierState.BoundTargetKind != DynamicModifierTargetKind.Operation)
+            {
+                return false;
+            }
+
+            return action.Type == DynamicActionType.ApplyOperation
+                && (int)action.Operation == modifierState.BoundTargetId;
         }
 
         private static bool BlocksActiveDreamSlot(DynamicModifierState modifierState, DynamicPlayerAction action)

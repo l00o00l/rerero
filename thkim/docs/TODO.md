@@ -36,6 +36,26 @@ backlog로 쓰지 않는다. 각 항목에는 왜 중요한지, 왜 미뤘는지
 
 ## 열림
 
+### 2026-06-17 - Unity batchmode 검증 직렬 실행 가드
+
+- 상태: 열림
+- 배경: `DreamLaundromat` 검증 중 `test.cmd -Mode EditMode`와 `dynamic-lab.cmd`를
+  동시에 실행했을 때 같은 Unity project를 두 batchmode 프로세스가 열면서
+  `dynamic-lab.cmd`가 report를 만들지 못하고 즉시 실패했다. 단독 재실행 시에는
+  정상 통과했다.
+- 중요한 이유: 앞으로 PR 검증이나 장시간 자동 작업에서 Unity batchmode 명령을 병렬로
+  실행하면 실제 코드 회귀가 아닌 project lock 충돌을 실패로 오인할 수 있다.
+- 보류한 이유: 이번 작업의 주 범위는 `DreamLaundromat` release gameplay slice
+  구현이며, 공통 검증 orchestrator나 lock 파일 기반 실행 큐를 만드는 것은 별도
+  인프라 작업이다.
+- 다음 단계: `docs/IMPLEMENTATION_PLANNING.md` 또는 공통 검증 스크립트에 Unity
+  project별 batchmode 명령은 직렬 실행한다는 규칙을 추가하고, 필요하면
+  `scripts/check-pr.ps1` 같은 wrapper에서 project lock을 감지한다.
+- 완료 기준: 로컬 PR 검증 절차에서 Unity batchmode 명령이 같은 project에 대해
+  병렬로 실행되지 않으며, 충돌 시 원인을 명확히 안내한다.
+- 관련: `DreamLaundromat/test.cmd`, `DreamLaundromat/dynamic-lab.cmd`,
+  `DreamLaundromat/release-slice.cmd`.
+
 ### 2026-06-15 - Android 실행 스크립트 공통 템플릿 정리
 
 - 상태: 열림

@@ -41,6 +41,18 @@ namespace Thkim.DreamLaundromat.DynamicLab
                 AppendOrder(builder, state.OrderPreview[i]);
             }
 
+            builder.Append("/dream-draw:");
+            for (int i = state.NextDreamIndex; i < state.DreamDrawPile.Count; i++)
+            {
+                AppendDream(builder, state.DreamDrawPile[i]);
+            }
+
+            builder.Append("/order-draw:");
+            for (int i = state.NextOrderIndex; i < state.OrderDrawPile.Count; i++)
+            {
+                AppendOrder(builder, state.OrderDrawPile[i]);
+            }
+
             builder.Append('/');
             for (int i = 0; i < state.Modifiers.Count; i++)
             {

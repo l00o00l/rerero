@@ -6,6 +6,7 @@ using Thkim.DreamLaundromat.UI;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.SceneManagement;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -126,7 +127,7 @@ namespace Thkim.DreamLaundromat.Editor.Setup
             PlayerSettings.SetUseDefaultGraphicsAPIs(BuildTarget.Android, false);
             PlayerSettings.SetGraphicsAPIs(BuildTarget.Android, new[] { UnityEngine.Rendering.GraphicsDeviceType.OpenGLES3 });
             EditorSettings.serializationMode = SerializationMode.ForceText;
-            EditorSettings.externalVersionControl = "Visible Meta Files";
+            VersionControlSettings.mode = "Visible Meta Files";
         }
 
         private static LevelCatalog CreateLevelAssets()
